@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Courier | drivex</title>
+
+    {% load bootstrap4 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='full' %}
+    {% comment %} {% include 'load_firebase.html' %} {% endcomment %}
+
+    <link rel="stylesheet" href="https://unpkg.com/bootoast@1.0.1/dist/bootoast.min.css" />
+
+    {% comment %} <script>
+        const messaging = firebase.messaging()
+        messaging.getToken({
+            validKey: "{{ FIREBASE_WEB_PUSH_CERT }}"
+        }).then((currentToken) => {
+            console.log(currentToken)
+            if (currentToken) {
+                fetch('{% url "courier:fcm_token_update_api" %}?fcm_token=' + currentToken)
+            }
+        }).catch((err) => {
+            console.log('An error occured while retrieving token: ', err)
+        })
+    </script> {% endcomment %}
+    <script>
+        let vh = window.innerHeight * 0.01;
+
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    </script>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css" />
+    <link rel="stylesheet" href="https://unpkg.com/bootoast@1.0.1/dist/bootoast.min.css" />
+
+    <style>
+        #content {
+            height: calc(var(--vh, 1vh) * 100);
+        }
+    </style>
+    {% block head %}{% endblock head %}
+</head>
+
+<body>
+    <!-- navigation -->
+    <nav
+      class="navbar {% if not request.user.is_authenticated %} navbar-expand-lg {% endif %} navbar-light bg-dark"
+    >
+      <a class="navbar-brand" href="/" style="color: white"
+        ><h2>DriveXpress!</h2></a
+      >
+      {% comment %} <form class="form-inline">
+        <span class="mr-4" style="color: white"
+          >{{ request.user.get_full_name | title }}</span
+        >
+        <a href="/sign-out" class="btn btn-outline-info">Sign Out</a>
+      </form> {% endcomment %}
+    </nav>
+    
+    {% comment %} body content {% endcomment %}
+    <div id="content">
+        {% block content %}{% endblock content %}
+    </div>
+
+    <!-- footer -->
+    {% block footercontent %}{% endblock footercontent %}
+
+    <!-- scripts -->
+    {% block scripts %}{% endblock scripts %}
+
+    <!-- Toast messages -->
+    <script src="https://unpkg.com/bootoast@1.0.1/dist/bootoast.min.js"></script>
+    <script>
+        function toast(message, type) {
+            bootoast.toast({
+                position: 'centerBottom',
+                message,
+                type
+            })
+        }
+    </script>
+    {% if messages %}
+    {% for message in messages %}
+    <script>
+        toast('{{ message }}', '{{ message.tags }}')
+    </script>
+    {% endfor %}
+    {% endif %}
+
+</body>
+
+</html>

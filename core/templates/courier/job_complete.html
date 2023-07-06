@@ -1,0 +1,11 @@
+{% extends 'courier/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="h-100 d-flex flex-column align-items-center justify-content-center">
+    <img src="{% static 'img/complete.gif' %}" alt="" class="mb-3" width="200" height="200">
+    <p>Your job was completed! Well done.</p>
+
+    <a href="{% url 'courier:home' %}" class="btn btn-warning">Check available jobs</a>
+</div>
+{% endblock content %}

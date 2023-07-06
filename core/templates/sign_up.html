@@ -1,0 +1,39 @@
+{% extends 'base2.html' %}
+
+{% load bootstrap4 %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-4">
+      <div class="card">
+
+        <div class="card-body">
+          <h4 class="text-center mb-3">
+            <b>
+              {% if request.GET.next != '/courier/' %}
+              Customer SignUp
+              {% else %}
+              Courier Signup
+              {% endif %}
+            </b>
+          </h4>
+
+          <form method="POST">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button type="submit" class="btn btn-info btn-block">Sign Up</button>
+            <p class="text-center mt-=3">
+              Already have an account?
+              <a href="/sign-in/?next={{ request.GET.next }}" style="text-decoration: none; color: #0dcaf0;"><b>Sign in</b></a>
+            </p>
+            <hr>
+            {% comment %} <a href="{% url 'social:begin' 'facebook' %}?next={{ request.GET.next }}"
+              class="btn btn-outline-primary btn-block">Sign In with Facebook</a> {% endcomment %}
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

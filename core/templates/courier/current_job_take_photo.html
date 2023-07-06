@@ -1,0 +1,111 @@
+{% extends 'courier/base.html' %}
+{% load static %}
+
+{% block head %}
+<script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
+<style>
+    body {
+        background-color: black;
+    }
+
+    .btn-back {
+        position: fixed;
+        top: 30px;
+        left: 30px;
+    }
+
+    .buttons {
+        position: fixed;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        text-align: center;
+    }
+
+    #take-photo-step {
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+    video {
+        width: 100%;
+        height: auto;
+    }
+
+    #upload-step {
+        height: 100%;
+        display: none;
+        align-items: center;
+    }
+</style>
+{% endblock head %}
+
+{% block content %}
+<div id="upload-step">
+    <img id="photo" />
+    <div class="buttons">
+        <a href="javascript:void(retake_photo())" id="retake-button" class="btn btn-light">Retake</a>
+        <a href="javascript:void(upload_photo())" id="upload-button" class="btn btn-info">
+            Upload {% if job.status == 'picking' %} Pickup {% else %} Drop-off {% endif %} Photo</a>
+    </div>
+</div>
+
+<div id="take-photo-step">
+    <video id="webcam" autoplay playsinline></video>
+    <canvas id="canvas" class="d-none"></canvas>
+
+    <a href="{% url 'courier:current_job' %}" class="btn-back">
+        <i class="fas fa-chevron-left text-light"></i>
+    </a>
+
+    <div class="buttons">
+        <a href="javascript:void(take_photo())" class="btn btn-info">
+            Take {% if job.status == 'picking' %} Pickup {% else %} Drop-off {% endif %} Photo</a>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    const webcamElement = document.getElementById('webcam')
+    const canvasElement = document.getElementById('canvas')
+    const webcam = new Webcam(webcamElement, 'environment', canvasElement)
+    webcam.start()
+
+    function take_photo() {
+        let picture = webcam.snap()
+        console.log(picture)
+
+        $("#photo").attr("src", picture)
+        $("#take-photo-step").css("display", "none")
+        $("#upload-step").css("display", "flex")
+    }
+
+    function retake_photo() {
+        $("#upload-step").css("display", "none")
+        $("#take-photo-step").css("display", "flex")
+    }
+
+    function upload_photo() {
+        document.getElementById("canvas").toBlob(function (blob) {
+            var formData = new FormData()
+            var upload_name = "{% if job.status == 'picking' %}pickup{% else %}delivery{% endif %}_photo"
+            formData.append(upload_name, blob, upload_name + '.png')
+
+            fetch("{% url 'courier:current_job_update_api' job.id %}", {
+                method: "POST",
+                body: formData
+            }).then(function (res) {
+                return res.json()
+            }).then(function (json) {
+                if (json.success) {
+                    window.location.href =
+                        "{% if job.status == 'picking' %}{% url 'courier:current_job' %}{% else %}{% url 'courier:job_complete' %}{% endif %}"
+                }
+            })
+        })
+    }
+</script>
+{% endblock scripts %}

@@ -1,0 +1,132 @@
+{% extends 'courier/base.html' %}
+
+{% block head %}
+<script>
+    function initMap() {
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 13,
+            center: {
+                lat: -1.2921,
+                lng: 36.8219
+            },
+        });
+
+        fetch("{% url 'courier:available_jobs_api' %}")
+            .then(res => res.json())
+            .then(json => {
+                // new viewpoint bound
+                var bounds = new google.maps.LatLngBounds()
+
+                for (let i = 0; i < json.jobs.length; i++) {
+                    const job = json.jobs[i]
+                    const position = {
+                        lat: job.pickup_lat,
+                        lng: job.pickup_lng
+                    }
+                    const marker = new google.maps.Marker({
+                        position: position,
+                        map
+                    })
+
+                    bounds.extend(position)
+
+                    new google.maps.InfoWindow({
+                        content: "<small><b>" + job.name + "</b></small><br /><small>" + job.distance +
+                            " Km</small>"
+                    }).open(map, marker)
+
+                    // click event job
+                    marker.addListener("click", () => {
+                        showJobDetails(job)
+                    })
+
+                    map.fitBounds(bounds)
+                }
+            })
+    }
+
+    function showJobDetails(job) {
+        $("#job-details").css("display", "block")
+        $("#job-name").html(job.name)
+        $("#pickup-address").html(job.pickup_address)
+        $("#delivery-address").html(job.delivery_address)
+        $("#duration").html(job.duration)
+        $("#distance").html(job.distance)
+        $("#price").html(job.price)
+        $("#job-photo").attr('src', "/media/" + job.photo)
+        $("#job-details").on("click", function () {
+            window.location.href = "/courier/jobs/available/" + job.id + "/"
+        })
+    }
+
+    messaging.onMessage((payload) => {
+        window.location.reload()
+    })
+</script>
+
+<style>
+    .gm-ui-hover-effect {
+        display: none !important;
+    }
+
+    #map {
+        flex: 1;
+    }
+
+    small {
+        font-size: 12px;
+        line-height: 1.2rem;
+    }
+
+    .card {
+        border: none;
+    }
+
+    #job-details {
+        display: none;
+    }
+</style>
+{% endblock head %}
+
+{% block content %}
+<div class="d-flex flex-column h-100" style="padding-bottom: 60px">
+    <div id="map"></div>
+
+    <div id="job-details" class="card">
+        <div class="card-body p-2">
+            <div class="media">
+                <img id="job-photo" class="rounded-lg mr-3" width="50px" height="50px">
+                <div class="media-body">
+                    <b id="job-name"></b>
+                    <div class="d-flex">
+                        <div class="flex-grow-1 mr-2">
+                            <small class="text-success">
+                                <i class="fas fa-car"></i> <span id="distance"></span> km
+                                <i class="far fa-clock ml-2"></i> <span id="duration"></span> mins
+                            </small>
+
+                            <div class="d-flex align-items-center mt-2">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <small id="pickup-address" class="text-secondary ml-2"></small>
+                            </div>
+
+                            <div class="d-flex align-items-center mt-2">
+                                <i class="fas fa-flag-checkered"></i>
+                                <small id="delivery-address" class="text-secondary ml-2"></small>
+                            </div>
+                        </div>
+                        $<h3 id="price"></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'courier/bottom_tabs.html' %}
+{% endblock content %}
+
+{% block scripts %}
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_API_KEY }}&callback=initMap&libraries=places&v=weekly">
+</script>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'courier/base.html' %}
+
+{% block head %}
+
+<style>
+    small {
+        font-size: 12px;
+        line-height: 1.2rem;
+    }
+
+    .card {
+        border-radius: 0;
+    }
+</style>
+{% endblock head %}
+
+{% block content %}
+
+<br />
+<div class="d-flex flex-column h-100" style="padding-bottom: 60px">
+    <div class="text-center">
+        <div class="btn-group mt-1 mb-1 align-item-center" role="group">
+            <a href="{% url 'courier:current_job' %}" class="btn btn-outline-info">Current Job</a>
+            <a href="{% url 'courier:archived_jobs' %}" class="btn btn-info">Archived Jobs</a>
+        </div>
+    </div>
+
+    {% if jobs %}
+
+    {% for job in jobs %}
+    <div class="card">
+        <div class="card-body p-2">
+            <div class="media">
+                <img src="{{ job.photo.url }}" class="rounded-lg mr-3" width="50px" height="50px">
+                <div class="media-body">
+                    <b>{{ job.name }}</b>
+                    <div class="d-flex">
+                        <div class="flex-grow-1 mr-2">
+                            <small class="text-success">
+                                <i class="fas fa-car"></i> <span>{{ job.distance }}</span> km
+                                <i class="far fa-clock ml-2"></i> <span>{{ job.duration }}</span> mins
+                            </small>
+
+                            <div class="d-flex align-items-center mt-2">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <small class="text-secondary ml-2">{{ job.pickup_address }}</small>
+                            </div>
+
+                            <div class="d-flex align-items-center mt-2">
+                                <i class="fas fa-flag-checkered"></i>
+                                <small class="text-secondary ml-2">{{ job.delivery_address }}</small>
+                            </div>
+                        </div>
+                        $<h3>{{ job.price }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% else %}
+    <div id="main" class="text-center">
+        <p>You have no job now. Let's pick a new one.</p>
+    </div>
+
+    {% endif %}
+
+</div>
+{% include 'courier/bottom_tabs.html' %}
+{% endblock content %}

@@ -1,0 +1,190 @@
+{% extends 'courier/base.html' %}
+{% load static %}
+
+{% block head %}
+<script>
+    var pickupLat = parseFloat("{{ job.pickup_lat }}")
+    var pickupLng = parseFloat("{{ job.pickup_lng }}")
+    var deliveryLat = parseFloat("{{ job.delivery_lat }}")
+    var deliveryLng = parseFloat("{{ job.delivery_lng }}")
+
+    function initMap() {
+
+        if (!document.getElementById("map")) {
+            return
+        }
+
+        const directionsService = new google.maps.DirectionsService();
+        const directionsRenderer = new google.maps.DirectionsRenderer({
+            suppressMarkers: true,
+            polylineOptions: {
+                strokeColor: "#000",
+                strokeWeight: 5,
+                strokeOpacity: 0.8
+            }
+        });
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 7,
+            center: {
+                lat: 41.85,
+                lng: -87.65
+            },
+        });
+        directionsRenderer.setMap(map);
+        calculateAndDisplayRoute(map, directionsService, directionsRenderer);
+    }
+
+    function calculateAndDisplayRoute(map, directionsService, directionsRenderer) {
+        directionsService
+            .route({
+                origin: new google.maps.LatLng(pickupLat, pickupLng),
+                destination: new google.maps.LatLng(deliveryLat, deliveryLng),
+                travelMode: google.maps.TravelMode.DRIVING,
+            })
+            .then((response) => {
+                if (response.status === "OK") {
+                    var leg = response.routes[0].legs[0]
+                    new google.maps.Marker({
+                        position: leg.start_location,
+                        map: map,
+                        icon: "{% static 'img/start.png' %}"
+                    })
+
+                    new google.maps.Marker({
+                        position: leg.end_location,
+                        map: map,
+                        icon: "{% static 'img/end.png' %}"
+                    })
+                }
+                directionsRenderer.setDirections(response)
+                updateCourierPosition(map)
+            })
+            .catch((e) => window.alert("Directions request failed due to " + status));
+    }
+
+    function updateCourierPosition(map) {
+        navigator.geolocation.watchPosition(
+            pos => {
+                var courierPosition = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude)
+
+                if (!window.courierMarker) {
+                    window.courierMarker = new google.maps.Marker({
+                        position: courierPosition,
+                        map,
+                        icon: "{% static 'img/courier.png' %}"
+                    })
+                } else {
+                    window.courierMarker.setPosition(courierPosition)
+                }
+
+                map.panTo(courierPosition)
+
+                try {
+                    const jobSocket = new WebSocket(
+                        "ws://" + window.location.host + "/ws/jobs/{{ job.id }}/"
+                    )
+
+                    jobSocket.onopen = function (openEvent) {
+                        console.log("WebSocket OPEN: " + JSON.stringify(openEvent, null, 4));
+                        jobSocket.send(JSON.stringify({
+                            job: {
+                                courier_lat: pos.coords.latitude,
+                                courier_lng: pos.coords.longitude,
+                            }
+                        }))
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
+            },
+            pos => console.log(pos))
+    }
+</script>
+
+<style>
+    #map {
+        flex: 1;
+    }
+
+    small {
+        font-size: 12px;
+        line-height: 1.2rem;
+    }
+
+    .card {
+        border: none;
+    }
+</style>
+{% endblock head %}
+
+{% block content %}
+
+<br />
+<div class="d-flex flex-column h-100" style="padding-bottom: 60px">
+    <div class="text-center">
+        <div class="btn-group mt-1 mb-1 align-item-center" role="group">
+            <a href="{% url 'courier:current_job' %}" class="btn btn-info">Current Job</a>
+            <a href="{% url 'courier:archived_jobs' %}" class="btn btn-outline-info">Archived Jobs</a>
+        </div>
+    </div>
+
+
+    {% if job %}
+    <div id="map"></div>
+
+    <div class="card">
+        <div class="card-body p-2">
+            <div class="media">
+                <img src="{{ job.photo.url }}" class="rounded-lg mr-3" width="50px" height="50px">
+                <div class="media-body">
+                    <b>{{ job.name }}</b>
+                    <div class="d-flex">
+                        <div class="flex-grow-1 mr-2">
+                            <small class="text-success">
+                                <i class="fas fa-car"></i> <span>{{ job.distance }}</span> km
+                                <i class="far fa-clock ml-2"></i> <span>{{ job.duration }}</span> mins
+                            </small>
+
+                            <div class="d-flex align-items-center mt-2">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <small class="text-secondary ml-2">{{ job.pickup_address }}</small>
+                            </div>
+
+                            <div class="d-flex align-items-center mt-2">
+                                <i class="fas fa-flag-checkered"></i>
+                                <small class="text-secondary ml-2">{{ job.delivery_address }}</small>
+                            </div>
+                        </div>
+                        $<h3>{{ job.price }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% url 'courier:current_job_take_photo_page' job.id %}"
+                class="btn btn-block btn-info btn-md mt-3">
+                {% if job.status == 'picking' %}
+                Pickup
+                {% else %}
+                Drop-off
+                {% endif %}
+            </a>
+        </div>
+    </div>
+
+    {% else %}
+    <div id="main" class="text-center">
+        <p>No job currently taken. Pick a new one.</p>
+    </div>
+
+    {% endif %}
+
+
+</div>
+{% include 'courier/bottom_tabs.html' %}
+{% endblock content %}
+
+{% block scripts %}
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_API_KEY }}&callback=initMap&libraries=places&v=weekly">
+</script>
+{% endblock %}

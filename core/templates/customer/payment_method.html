@@ -1,0 +1,45 @@
+{% extends 'customer/base.html' %}
+{% load bootstrap4 %}
+
+{% block main %}
+    {% if not request.user.customer.mpesa_details %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            Add M-Pesa details to <strong>Create a Job</strong>!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endif %}
+
+    <b class="text-secondary">M-Pesa Details</b>
+
+    <div class="card bg-white mt-2 mb-5">
+        <div class="card-body">
+
+            {% if request.user.customer.mpesa_details %}
+                <div id="change-mpesa" class="input-group">
+                    <input type="text" class="form-control" disabled
+                           value="{{ request.user.customer.mpesa_details }}" />
+                    <div class="input-group-append">
+                        <form method="POST" action="{% url 'remove_payment_method' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="inputDetails">Input Details:</label>
+                        <input type="text" class="form-control" id="inputDetails" name="inputDetails"
+                               placeholder="M-pesa number" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-info">Save Details</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% endblock main %}

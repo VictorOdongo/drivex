@@ -106,8 +106,7 @@ def create_job_page(request):
 
     if request.method == "POST":
         if request.POST.get('step') == '1':
-            step1_form = forms.JobCreateStep1Form(
-                request.POST, request.FILES, instance=creating_job)
+            step1_form = forms.JobCreateStep1Form(request.POST, request.FILES, instance=creating_job)
             if step1_form.is_valid():
                 creating_job = step1_form.save(commit=False)
                 creating_job.customer = current_customer
@@ -115,8 +114,7 @@ def create_job_page(request):
                 return redirect(reverse('customer:create_job'))
 
         elif request.POST.get('step') == '2':
-            step2_form = forms.JobCreateStep2Form(
-                request.POST, instance=creating_job)
+            step2_form = forms.JobCreateStep2Form(request.POST, instance=creating_job)
             if step2_form.is_valid():
                 creating_job = step2_form.save()
                 return redirect(reverse('customer:create_job'))

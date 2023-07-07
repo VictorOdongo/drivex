@@ -4,14 +4,14 @@
 {% block main %}
     {% if not request.user.customer.mpesa_details %}
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            Add M-Pesa details to <strong>Create a Job</strong>!
+            Add paypal details to <strong>Create a Job</strong>!
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
     {% endif %}
 
-    <b class="text-secondary">M-Pesa Details</b>
+    <b class="text-secondary">Paypal Details</b>
 
     <div class="card bg-white mt-2 mb-5">
         <div class="card-body">
@@ -34,7 +34,7 @@
                     <div class="form-group">
                         <label for="inputDetails">Input Details:</label>
                         <input type="text" class="form-control" id="inputDetails" name="inputDetails"
-                               placeholder="M-pesa number" required>
+                               placeholder="paypal email" required>
                     </div>
 
                     <button type="submit" class="btn btn-info">Save Details</button>

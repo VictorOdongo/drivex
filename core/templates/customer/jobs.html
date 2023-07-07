@@ -32,17 +32,26 @@
                         <p>{{ job.description }}</p>
 
                         <div class="d-flex mb-4">
+                            <b>from:</b>
                             <i class="fas fa-map-marker-alt"></i>
                             <div class="ml-2">
-                                <b>{{ job.pickup_name }}</b>
-                                <small>{{ job.pickup_address }}</small>
+                                <small>{{ job.pickup_address }}</small><br />
+                                <div class="d-flex align-items-center">
+                                    <h6 class="mr-2 mb-0">sender:</h6>
+                                    <b>{{ job.pickup_name }}</b>
+                                </div>
                             </div>
                         </div>
                         <div class="d-flex">
+                            <b>to: </b>
                             <i class="fas fa-flag-checkered"></i>
                             <div class="ml-2">
-                                <b>{{ job.delivery_name }}</b>
                                 <small>{{ job.delivery_address }}</small>
+                                <div class="d-flex align-items-center">
+                                    <h6 class="mr-2 mb-0">recepient:</h6>
+                                    <b>{{ job.delivery_name }}</b>
+                                </div>
+                                
                             </div>
                         </div>
                     </div>

@@ -106,11 +106,9 @@ class Job(models.Model):
     price = models.FloatField(default=0)
 
     # Extra info
-    pickup_photo = models.ImageField(
-        upload_to='job/pickup_photos/', null=True, blank=True)
+    pickup_photo = models.ImageField(upload_to='job/pickup_photos/', null=True, blank=True)
     pickuped_at = models.DateTimeField(null=True, blank=True)
-    delivery_photo = models.ImageField(
-        upload_to='job/delivery_photos/', null=True, blank=True)
+    delivery_photo = models.ImageField(upload_to='job/delivery_photos/', null=True, blank=True)
     delivered_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):

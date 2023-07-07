@@ -39,10 +39,10 @@
             }
         });
         const map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 7,
+            zoom: 13,
             center: {
-                lat: 41.85,
-                lng: -87.65
+                lat: -1.1821,
+                lng: 36.9366
             },
         });
         directionsRenderer.setMap(map);
@@ -153,7 +153,10 @@
                 <span>{{ job.pickup_address }}</span>
             </div>
             <div class="col-lg-4">
-                <b>{{ job.pickup_name }}</b><br />
+                <div class="d-flex align-items-center">
+                    <h6 class="mr-2 mb-0">sender:</h6>
+                    <b>{{ job.pickup_name }}</b>
+                </div>
                 <span>{{ job.pickup_phone }}</span>
             </div>
             <div id="pickup_photo" class="col-lg-4">
@@ -176,7 +179,10 @@
                 <span>{{ job.delivery_address }}</span>
             </div>
             <div class="col-lg-4">
-                <b>{{ job.delivery_name }}</b><br />
+                <div class="d-flex align-items-center">
+                    <h6 class="mr-2 mb-0">recepient:</h6>
+                    <b>{{ job.delivery_name }}</b>
+                </div>
                 <span>{{ job.delivery_phone }}</span>
             </div>
             <div id="delivery_photo" class="col-lg-4">

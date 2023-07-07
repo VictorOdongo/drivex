@@ -73,39 +73,7 @@ def profile_page(request):
 
 @login_required(login_url="/sign-in/?next=/customer/")
 def payment_method_page(request):
-    current_customer = request.user.customer
-
-    # Remove existing payment method
-    if request.method == "POST":
-        current_customer.mpesa_details = ""
-        current_customer.save()
-        return redirect(reverse('customer:payment_method'))
-
-    # Save M-Pesa customer info
-    if not current_customer.mpesa_customer_id:
-        # Create the M-Pesa customer
-        # Add the appropriate code to create the M-Pesa customer
-
-        current_customer.mpesa_customer_id = "M_PESA_CUSTOMER_ID"
-        current_customer.save()
-
-    # Get available payment methods for customer from M-Pesa
-    mpesa_payment_methods = PaymentMethod.objects.filter(customer=current_customer)
-
-    if mpesa_payment_methods.exists():
-        payment_method = mpesa_payment_methods.first()
-        current_customer.mpesa_details = payment_method.input_details
-        current_customer.save()
-    else:
-        current_customer.mpesa_details = ""
-        current_customer.save()
-        
-    if not current_customer.mpesa_details:
-        # Create the M-Pesa payment method
-        # Add the appropriate code to create the M-Pesa payment method
-
-        return render(request, 'customer/payment_method.html')
-    else:
+   
         return render(request, 'customer/payment_method.html')
 
 
@@ -126,11 +94,10 @@ def create_job_page(request):
     ).exists()
 
     if has_current_job:
-        messages.warning(request, "You are currently already processing a job")
+        messages.warning(request, "You are currently processing a job")
         return redirect(reverse('customer:current_jobs'))
 
-    creating_job = Job.objects.filter(
-        customer=current_customer, status=Job.CREATING_STATUS).last()
+    creating_job = Job.objects.filter(customer=current_customer, status=Job.CREATING_STATUS).last()
     step1_form = forms.JobCreateStep1Form(instance=creating_job)
 
     step2_form = forms.JobCreateStep2Form(instance=creating_job)
@@ -187,7 +154,7 @@ def create_job_page(request):
 
         elif request.POST.get('step') == '4':
             if creating_job.price:
-                # try:
+                try:
                 #     payment_intent = stripe.PaymentIntent.create(
                 #         amount=int(creating_job.price * 100),
                 #         currency='usd',
@@ -203,8 +170,8 @@ def create_job_page(request):
                 #         amount=creating_job.price
                 #     )
 
-                #     creating_job.status = Job.PROCESSING_STATUS
-                #     creating_job.save()
+                    creating_job.status = Job.PROCESSING_STATUS
+                    creating_job.save()
 
                 #     # Send push notifications to all couriers
                 #     couriers = Courier.objects.all()
@@ -233,13 +200,12 @@ def create_job_page(request):
 
                     return redirect(reverse('customer:home'))
 
-                # except stripe.error.CardError as e:
-                #     err = e.error
-                #     # Error code will be authentication_required if authentication is needed
-                #     print("Code is: %s" % err.code)
-                #     payment_intent_id = err.payment_intent['id']
-                #     payment_intent = stripe.PaymentIntent.retrieve(
-                #         payment_intent_id)
+                except stripe.error.CardError as e:
+                    err = e.error
+                    # Error code will be authentication_required if authentication is needed
+                    print("Code is: %s" % err.code)
+                    # payment_intent_id = err.payment_intent['id']
+                    # payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
 
     # Determine the current step
     if not creating_job:

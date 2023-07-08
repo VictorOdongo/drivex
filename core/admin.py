@@ -79,8 +79,7 @@ class CourierAdmin(admin.ModelAdmin):
 
 
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ['stripe_payment_intent_id',
-                    'courier_paypal_email', 'customer', 'courier', 'job', 'amount', 'status', 'created_at']
+    list_display = ['stripe_payment_intent_id', 'courier_paypal_email', 'customer', 'courier', 'job', 'amount', 'status', 'created_at']
     list_filter = ['status', ]
 
     def customer(self, obj):

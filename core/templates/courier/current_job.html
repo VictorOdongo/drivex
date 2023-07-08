@@ -26,8 +26,8 @@
         const map = new google.maps.Map(document.getElementById("map"), {
             zoom: 7,
             center: {
-                lat: 41.85,
-                lng: -87.65
+                lat: -1.2921,
+                lng: 36.8219
             },
         });
         directionsRenderer.setMap(map);
@@ -161,7 +161,7 @@
             </div>
 
             <a href="{% url 'courier:current_job_take_photo_page' job.id %}"
-                class="btn btn-block btn-info btn-md mt-3">
+                class="btn btn-info btn-md mt-3">
                 {% if job.status == 'picking' %}
                 Pickup
                 {% else %}

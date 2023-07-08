@@ -28,6 +28,8 @@
                         map
                     })
 
+                    // increase bounds to take in the points
+
                     bounds.extend(position)
 
                     new google.maps.InfoWindow({
@@ -35,11 +37,12 @@
                             " Km</small>"
                     }).open(map, marker)
 
-                    // click event job
+                    // click event for each job
                     marker.addListener("click", () => {
                         showJobDetails(job)
                     })
 
+                    // fit the bounds to the map
                     map.fitBounds(bounds)
                 }
             })
@@ -54,9 +57,9 @@
         $("#distance").html(job.distance)
         $("#price").html(job.price)
         $("#job-photo").attr('src', "/media/" + job.photo)
-        $("#job-details").on("click", function () {
-            window.location.href = "/courier/jobs/available/" + job.id + "/"
-        })
+        $("#job-details").css("cursor", "pointer").on("click", function () {
+        window.location.href = "/courier/jobs/available/" + job.id + "/";
+    });
     }
 
     messaging.onMessage((payload) => {

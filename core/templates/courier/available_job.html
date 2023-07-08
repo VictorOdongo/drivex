@@ -12,18 +12,17 @@
         display: flex;
         align-items: center;
         padding: 0 20px;
-        background-color: #ffc106;
         box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2)
     }
 </style>
 {% endblock head %}
 
 {% block content %}
-<div class="header">
-    <a href="{% url 'courier:available_jobs' %}" class="mr-2">
+<div class="header bg-dark">
+    <a href="{% url 'courier:available_jobs' %}" class="mr-2 text-decoration-none d-flex align-items-center">
         <i class="fas fa-chevron-left text-dark"></i>
+        <h4 class="text-light mb-0 ml-2">Available Jobs</h4>
     </a>
-    <h4 class="mt-1 mb-0">Available Jobs</h4>
 </div>
 
 <div class="container-fluid" style="padding-top: 80px;">
@@ -50,13 +49,10 @@
 
     <b class="text-secondary">CUSTOMER</b>
     <div class="media align-items-center mt-2">
-        <img src="{% if job.customer.avatar %}
-                      {{ job.customer.avatar.url }}
-                  {% else %}
-                      {% static 'img/avatar.png' %}
-                  {% endif %}" alt="" class="rounded-circle mr-3" width="60" height="60" />
+        <img src="{% if job.customer.avatar %}{{ job.customer.avatar.url }}{% else %}{% static 'img/avatar.png' %}{% endif %}" alt=""
+         class="rounded-circle mr-3" width="60" height="60" />
         <div class="media-body">
-            <h5 class="text-warning">{{ job.customer.user.get_full_name }}</h5>
+            <h5 class="text-dark">{{ job.customer.user.get_full_name }}</h5>
             <span>{{ job.customer.phone }}</span>
         </div>
     </div>
@@ -64,7 +60,7 @@
 
     <form method="POST">
         {% csrf_token %}
-        <button class="btn btn-info btn-block">Accept This Job</button>
+        <button class="btn btn-info">Accept This Job</button>
     </form>
 </div>
 {% endblock content %}

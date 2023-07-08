@@ -107,7 +107,7 @@ class Job(models.Model):
 
     # Extra info
     pickup_photo = models.ImageField(upload_to='job/pickup_photos/', null=True, blank=True)
-    pickuped_at = models.DateTimeField(null=True, blank=True)
+    pickedup_at = models.DateTimeField(null=True, blank=True)
     delivery_photo = models.ImageField(upload_to='job/delivery_photos/', null=True, blank=True)
     delivered_at = models.DateTimeField(null=True, blank=True)
 

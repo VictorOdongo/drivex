@@ -42,20 +42,33 @@
                 travelMode: google.maps.TravelMode.DRIVING,
             })
             .then((response) => {
+
                 if (response.status === "OK") {
-                    var leg = response.routes[0].legs[0]
-                    new google.maps.Marker({
+                    var leg = response.routes[0].legs[0];
+
+                    // Create a marker with the normal Google Maps start icon (red)
+                    var startMarker = new google.maps.Marker({
                         position: leg.start_location,
                         map: map,
-                        icon: "{% static 'img/start.png' %}"
-                    })
+                        icon: {
+                        url: "https://maps.google.com/mapfiles/dd-start.png",
+                        scaledSize: new google.maps.Size(40, 40),
+                        },
+                        fillColor: "red",
+                    });
 
-                    new google.maps.Marker({
+                    // Create a marker with the normal Google Maps end icon (green)
+                    var endMarker = new google.maps.Marker({
                         position: leg.end_location,
                         map: map,
-                        icon: "{% static 'img/end.png' %}"
-                    })
-                }
+                        icon: {
+                        url: "https://maps.google.com/mapfiles/dd-end.png",
+                        scaledSize: new google.maps.Size(40, 40),
+                        },
+                        fillColor: "green",
+                    });
+                    }
+
                 directionsRenderer.setDirections(response)
                 updateCourierPosition(map)
             })
@@ -67,15 +80,31 @@
             pos => {
                 var courierPosition = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude)
 
+
                 if (!window.courierMarker) {
-                    window.courierMarker = new google.maps.Marker({
+                    // Create a custom marker with Font Awesome icon for the courier
+                   window.courierMarker = new google.maps.Marker({
                         position: courierPosition,
-                        map,
-                        icon: "{% static 'img/courier.png' %}"
-                    })
-                } else {
-                    window.courierMarker.setPosition(courierPosition)
-                }
+                        map: map,
+                        icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 10,
+                        fillColor: "red",
+                        fillOpacity: 1,
+                        strokeColor: "black",
+                        strokeWeight: 1,
+                        labelOrigin: new google.maps.Point(0, 0),
+                        label: {
+                            text: "\uf1b9", // Unicode value for the Font Awesome car icon (fa-car)
+                            fontFamily: "Font Awesome 5 Free", // Font family for Font Awesome icons
+                            fontSize: "24px", // Adjust the size as needed
+                            fontWeight: "bold", // Adjust the weight as needed
+                        },
+                        },
+                    });
+                    } else {
+                    window.courierMarker.setPosition(courierPosition);
+                    }
 
                 map.panTo(courierPosition)
 

@@ -62,17 +62,7 @@
             .then((response) => {
                 if (response.status === "OK") {
                     var leg = response.routes[0].legs[0]
-                    new google.maps.Marker({
-                        position: leg.start_location,
-                        map: map,
-                        icon: "{% static 'img/start.png' %}"
-                    })
-
-                    new google.maps.Marker({
-                        position: leg.end_location,
-                        map: map,
-                        icon: "{% static 'img/end.png' %}"
-                    })
+                    //
                 }
 
                 window.courierMarker = new google.maps.Marker({

@@ -2,97 +2,74 @@
 {% load static %}
 
 {% block head %}
+
+
 <script>
-    var pickupLat = parseFloat("{{ job.pickup_lat }}")
-    var pickupLng = parseFloat("{{ job.pickup_lng }}")
-    var deliveryLat = parseFloat("{{ job.delivery_lat }}")
-    var deliveryLng = parseFloat("{{ job.delivery_lng }}")
+  var pickupLat = parseFloat("{{ job.pickup_lat }}");
+  var pickupLng = parseFloat("{{ job.pickup_lng }}");
+  var deliveryLat = parseFloat("{{ job.delivery_lat }}");
+  var deliveryLng = parseFloat("{{ job.delivery_lng }}");
 
-    function initMap() {
+  var courierLat = parseFloat("{{ job.courier.lat }}");
+  var courierLng = parseFloat("{{ job.courier.lng }}");
 
-        if (!document.getElementById("map")) {
-            return
-        }
+  function initMap() {
+    const directionsService = new google.maps.DirectionsService();
+    const directionsRenderer = new google.maps.DirectionsRenderer();
+    const map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 7,
+      center: { lat: -1.2921, lng: 36.8219 },
+    });
 
-        const directionsService = new google.maps.DirectionsService();
-        const directionsRenderer = new google.maps.DirectionsRenderer({
+    directionsRenderer.setMap(map);
+
+    calculateAndDisplayRoute(map, directionsService, directionsRenderer);
+
+
+  }
+
+  function calculateAndDisplayRoute(map, directionsService, directionsRenderer) {
+    directionsService
+      .route({
+        origin: new google.maps.LatLng(pickupLat, pickupLng),
+        destination: new google.maps.LatLng(deliveryLat, deliveryLng),
+        travelMode: google.maps.TravelMode.DRIVING,
+      })
+      .then((response) => {
+        new google.maps.DirectionsRenderer({
+            map: map,
+            directions: response,
             suppressMarkers: true,
             polylineOptions: {
                 strokeColor: "#000",
-                strokeWeight: 5,
-                strokeOpacity: 0.8
-            }
-        });
-        const map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 7,
-            center: {
-                lat: -1.2921,
-                lng: 36.8219
+                strokeOpacity: 1,
+                strokeWeight: 3,
             },
         });
-        directionsRenderer.setMap(map);
-        calculateAndDisplayRoute(map, directionsService, directionsRenderer);
-    }
+        //
+        
+        directionsRenderer.setDirections(response);
+        updateCourierPosition(map)
 
-    function calculateAndDisplayRoute(map, directionsService, directionsRenderer) {
-        directionsService
-            .route({
-                origin: new google.maps.LatLng(pickupLat, pickupLng),
-                destination: new google.maps.LatLng(deliveryLat, deliveryLng),
-                travelMode: google.maps.TravelMode.DRIVING,
-            })
-            .then((response) => {
+      })
+      .catch((e) => window.alert("Directions request failed due to " + status));
+  }
 
-                if (response.status === "OK") {
-                    var leg = response.routes[0].legs[0];
-                    new google.maps.Marker({
-                        position: leg.start_location,
-                        map: map,
-                        icon: "{% static 'img/start.png' %}"
-                    })
-
-                    new google.maps.Marker({
-                        position: leg.end_location,
-                        map: map,
-                        icon: "{% static 'img/end.png' %}"
-                    })
-                }
-                directionsRenderer.setDirections(response)
-                updateCourierPosition(map)
-            })
-            .catch((e) => window.alert("Directions request failed due to " + status));
-    }
-
-    function updateCourierPosition(map) {
+  
+  function updateCourierPosition(map) {
         navigator.geolocation.watchPosition(
             pos => {
                 var courierPosition = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude)
 
-
                 if (!window.courierMarker) {
-                    // Create a custom marker with Font Awesome icon for the courier
-                   window.courierMarker = new google.maps.Marker({
+                    window.courierMarker = new google.maps.Marker({
                         position: courierPosition,
-                        map: map,
-                        icon: {
-                        path: google.maps.SymbolPath.CIRCLE,
-                        scale: 10,
-                        fillColor: "red",
-                        fillOpacity: 1,
-                        strokeColor: "black",
-                        strokeWeight: 1,
-                        labelOrigin: new google.maps.Point(0, 0),
-                        label: {
-                            text: "\uf1b9", // Unicode value for the Font Awesome car icon (fa-car)
-                            fontFamily: "Font Awesome 5 Free", // Font family for Font Awesome icons
-                            fontSize: "24px", // Adjust the size as needed
-                            fontWeight: "bold", // Adjust the weight as needed
-                        },
-                        },
-                    });
-                    } else {
-                    window.courierMarker.setPosition(courierPosition);
-                    }
+                        map,
+                        icon: "{% static 'img/driver.png' %}"
+                    })
+                } else {
+                    window.courierMarker.setPosition(courierPosition)
+                }
 
                 map.panTo(courierPosition)
 
@@ -116,6 +93,8 @@
             },
             pos => console.log(pos))
     }
+
+  window.initMap = initMap;
 </script>
 
 <style>

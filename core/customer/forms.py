@@ -42,3 +42,7 @@ class JobCreateStep3Form(forms.ModelForm):
         model = Job
         fields = ('delivery_address', 'delivery_lat',
                   'delivery_lng', 'delivery_name', 'delivery_phone')
+        
+
+class PayPalEmailForm(forms.Form):
+    paypal_email = forms.EmailField(label='PayPal Email')

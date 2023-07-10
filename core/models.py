@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
+import paypalrestsdk
+from django.conf import settings
 
 import uuid
 from django.utils import timezone

@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -226,4 +227,28 @@ CHANNEL_LAYERS = {
             "hosts": [('127.0.0.1', 6379)],
         },
     },
+}
+
+# JAZZMIN SETTINGS
+JAZZMIN_SETTINGS = {
+    # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+    "site_header": "DriveX Admin",
+    
+     # title of the window (Will default to current_admin_site.site_title if absent or None)
+    "site_title": "Library Admin",
+    
+    # Welcome text on the login screen
+    "welcome_sign": "Welcome to DriveX Admin",
+    
+    # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
+    "login_logo": None,
+    
+     # Copyright on the footer
+    "copyright": "DriveX Ltd",
+
+}
+
+
+JAZZMIN_UI_TWEAKS = {
+    "theme": "simplex",
 }

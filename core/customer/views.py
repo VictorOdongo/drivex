@@ -57,13 +57,6 @@ def profile_page(request):
                 messages.success(request, 'Your password has been updated')
                 return redirect(reverse('customer:profile'))
 
-        # elif request.POST.get('action') == 'update_phone':
-        #     # Get Firebase user data
-        #     firebase_user = auth.verify_id_token(request.POST.get('id_token'))
-        #     request.user.customer.phone_number = firebase_user['phone_number']
-        #     request.user.customer.save()
-        #     return redirect(reverse('customer:profile'))
-
     return render(request, 'customer/profile.html', {
         "user_form": user_form,
         "customer_form": customer_form,

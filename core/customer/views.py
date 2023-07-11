@@ -1,8 +1,8 @@
 import paypalrestsdk
 import requests
 import stripe
-import firebase_admin
-from firebase_admin import credentials, auth, messaging
+# import firebase_admin
+# from firebase_admin import credentials, auth, messaging
 
 from django.conf import settings
 from django.shortcuts import render, redirect
@@ -15,6 +15,11 @@ from django.contrib.auth.forms import PasswordChangeForm
 
 from core.customer import forms
 from core.models import *
+
+from django.http import HttpResponse
+from django.views.decorators.http import require_POST
+from core.models import Transaction
+
 
 # cred = credentials.Certificate(settings.FIREBASE_ADMIN_CREDENTIAL)
 # firebase_admin.initialize_app(cred)
@@ -63,13 +68,57 @@ def profile_page(request):
         "password_form": password_form
     })
 
-
+# Payment processing
+@require_POST
 @login_required(login_url="/sign-in/?next=/customer/")
 def payment_method_page(request):
-   
-        return render(request, 'customer/payment_method.html')
+    current_customer = request.user.customer
+    
+    job_completed = Job.objects.filter(
+        customer=current_customer,
+        status__in=[Job.COMPLETED_STATUS, Job]
+    ).exists()
+    
+    if job_completed:
+        messages.success(request, "Job completed, pay now")
+        
+        # Process a PayPal payment and update the database
+        if request.method == "POST":
+            order_id = request.POST.get("orderID")
+            try:
+                paypalrestsdk.configure({
+                    "mode": "sandbox",  # Set your PayPal mode (sandbox or live)
+                    "client_id": "YOUR_CLIENT_ID",
+                    "client_secret": "YOUR_CLIENT_SECRET"
+                })
+                
+                payment = paypalrestsdk.Payment.find(order_id)
+                
+                if payment:
+                    timestamp = datetime.now()
+                    
+                    transaction = Transaction.objects.create(
+                        order_id=order_id,
+                        amount=payment.transactions[0].amount.total,
+                        status=payment.state,
+                        timestamp=timestamp
+                    )
+                    transaction.save()
+                    return HttpResponse("Payment processed successfully")
+                else:
+                    return HttpResponse("Payment processing failed")
+            except paypalrestsdk.ResourceNotFound:
+                return HttpResponse("Payment not found")
+            except paypalrestsdk.PayPalConnectionError:
+                return HttpResponse("Error connecting to PayPal")
+            except Exception:
+                return HttpResponse("An error occurred during payment processing")
+        else:
+            return HttpResponse("Invalid request")
+    
+    return render(request, 'customer/payment_method.html')
 
-
+# Job creation
 @login_required(login_url="/sign-in/?next=/customer/")
 def create_job_page(request):
     current_customer = request.user.customer

@@ -6,6 +6,8 @@ from django.conf import settings
 
 import uuid
 from django.utils import timezone
+from datetime import datetime
+
 
 import re
 
@@ -19,9 +21,9 @@ class Customer(models.Model):
     last_name = models.CharField(max_length=150, default="", validators=[RegexValidator(re.compile(r'^[a-zA-Z]+$'), 'Please enter a valid last name.')])
     phone = models.CharField(max_length=25, default="")
     # phone_number = models.CharField(max_length=50, blank=True)
-    paypal_customer_id = models.CharField(max_length=255, blank=True)
-    paypal_payment_method_id = models.CharField(max_length=255, blank=True)
-    paypal_email = models.EmailField(max_length=255, blank=False)
+    # paypal_customer_id = models.CharField(max_length=255, blank=True)
+    # paypal_payment_method_id = models.CharField(max_length=255, blank=True)
+    # paypal_email = models.EmailField(max_length=255, blank=False)
     
 
     def __str__(self):
@@ -75,17 +77,14 @@ class Job(models.Model):
     # Step 1
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    courier = models.ForeignKey(
-        Courier, on_delete=models.CASCADE, null=True, blank=True)
+    courier = models.ForeignKey(Courier, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
-    category = models.ForeignKey(
-        Category, on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     size = models.CharField(max_length=20, choices=SIZES, default=MEDIUM_SIZE)
     quantity = models.IntegerField(default=1)
     photo = models.ImageField(upload_to="job/photos/")
-    status = models.CharField(
-        max_length=20, choices=STATUSES, default=CREATING_STATUS)
+    status = models.CharField(max_length=20, choices=STATUSES, default=CREATING_STATUS)
     create_at = models.DateTimeField(default=timezone.now)
 
     # Step 2
@@ -124,13 +123,14 @@ class Transaction(models.Model):
         (IN_STATUS, 'In'),
         (OUT_STATUS, 'Out')
     )
-    paypal_payment_intent_id = models.CharField(max_length=255, unique=True)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=False, blank=False)
-    courier = models.ForeignKey(Courier, on_delete=models.CASCADE, null=True, blank=True)
+    transaction_id = models.CharField(max_length=100, default=None)
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     amount = models.FloatField(default=0)
     status = models.CharField(max_length=20, choices=STATUSES, default=IN_STATUS)
-    created_at = models.DateTimeField(default=timezone.now)
+    timestamp = models.DateTimeField(default=timezone.now)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=False, blank=False)
+    courier = models.ForeignKey(Courier, on_delete=models.CASCADE, null=True, blank=True)
+    order_id = models.CharField(max_length=100, default="")
 
     def __str__(self):
-        return self.paypal_payment_intent_id
+        return self.order_id

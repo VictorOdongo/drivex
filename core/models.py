@@ -24,6 +24,8 @@ class Customer(models.Model):
 
 class Courier(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    lat = models.FloatField(default=0)
+    lng = models.FloatField(default=0)
     paypal_email = models.EmailField(max_length=255, blank=True)
     fcm_token = models.TextField(blank=True)
 

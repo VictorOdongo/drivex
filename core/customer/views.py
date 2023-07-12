@@ -16,7 +16,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from core.customer import forms
 from core.models import *
 
-import json
+from django.http import JsonResponse
 # from intasend import APIService
 # import os
 

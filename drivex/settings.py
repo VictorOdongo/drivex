@@ -252,3 +252,7 @@ JAZZMIN_SETTINGS = {
 JAZZMIN_UI_TWEAKS = {
     "theme": "simplex",
 }
+
+# INTASEND_SECTRET_KEY = "ISSecretKey_live_0526687a-d69f-4321-88e5-1ad98eaffa10"
+# INTASEND_PUBKEY = "ISPubKey_live_9eae6ea6-c221-4ab3-8805-933aea7aca63"
+

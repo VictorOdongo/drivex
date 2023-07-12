@@ -16,14 +16,14 @@ from django.contrib.auth.forms import PasswordChangeForm
 from core.customer import forms
 from core.models import *
 
-# from django.http import HttpResponse
-# from core.models import Transaction
-
+import json
+# from intasend import APIService
+# import os
 
 # cred = credentials.Certificate(settings.FIREBASE_ADMIN_CREDENTIAL)
 # firebase_admin.initialize_app(cred)
 
-stripe.api_key = settings.STRIPE_API_SECRET_KEY
+# stripe.api_key = settings.STRIPE_API_SECRET_KEY
 
 
 @login_required()
@@ -70,20 +70,28 @@ def profile_page(request):
 # Payment processing
 @login_required(login_url="/sign-in/?next=/customer/")
 def payment_method_page(request):
-    current_customer = request.user.customer
-    
-    job_completed = Job.objects.filter(
-        customer=current_customer,
-        status__in=[Job.COMPLETED_STATUS, Job]
-    ).exists()
-    
-    if job_completed:
-        messages.success(request, "Job completed, pay now")
-        
+    jobs = Job.objects.filter(
+        courier=request.user.courier,
+        status=Job.COMPLETED_STATUS
+    )
+
+    total_price = round(sum(job.price for job in jobs) * 0.8, 2)
+    total_jobs = len(jobs)
+    total_km = sum(job.distance for job in jobs)
+
+    # job = Job.objects.all(id=pk)
+    # context = {'job': job}
+    if jobs:
+        messages.success(request, "Job completed, pay now") 
     else:
         messages.warning(request, "You have no completed jobs")
        
-    return render(request, 'customer/payment_method.html')
+    return render(request, 'customer/payment_method.html', {
+        "total_price": total_price,
+        "total_jobs": total_jobs,
+        "total_km": total_km,  
+    })
+
 
 # Job creation
 @login_required(login_url="/sign-in/?next=/customer/")

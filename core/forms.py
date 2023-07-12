@@ -12,13 +12,10 @@ class SignUpForm(UserCreationForm):
     email = forms.EmailField(max_length=250)
     first_name = forms.CharField(max_length=150, validators=[RegexValidator(re.compile(r'^[a-zA-Z]+$'), 'Please enter a valid first name.')])
     last_name = forms.CharField(max_length=150, validators=[RegexValidator(re.compile(r'^[a-zA-Z]+$'), 'Please enter a valid last name.')])
-    phone_regex = re.compile(r'^[0-9]+$')  # Regular expression for numbers only
-    phone = forms.CharField(max_length=25, validators=[RegexValidator(phone_regex, 'Please enter a valid phone number.')])
-
-
+    
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'phone', 'password1', 'password2')
+        fields = ('email', 'first_name', 'last_name', 'password1', 'password2')
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower()
@@ -38,7 +35,6 @@ class SignUpForm(UserCreationForm):
             customer.email = user.email
             customer.first_name = user.first_name
             customer.last_name = user.last_name
-            customer.phone = self.cleaned_data['phone']
             customer.save()
 
         return user

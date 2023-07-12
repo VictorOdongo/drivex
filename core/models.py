@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
-import paypalrestsdk
+# import paypalrestsdk
 from django.conf import settings
 
 import uuid
@@ -16,24 +16,16 @@ import re
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(upload_to='customer/avatars/', blank=True, null=True)
-    email = models.EmailField(max_length=250, default="")
-    first_name = models.CharField(max_length=150, default="", validators=[RegexValidator(re.compile(r'^[a-zA-Z]+$'), 'Please enter a valid first name.')])
-    last_name = models.CharField(max_length=150, default="", validators=[RegexValidator(re.compile(r'^[a-zA-Z]+$'), 'Please enter a valid last name.')])
-    phone = models.CharField(max_length=25, default="")
-    # phone_number = models.CharField(max_length=50, blank=True)
-    # paypal_customer_id = models.CharField(max_length=255, blank=True)
-    # paypal_payment_method_id = models.CharField(max_length=255, blank=True)
-    # paypal_email = models.EmailField(max_length=255, blank=False)
-    
+    phone_number = models.CharField(max_length=50, blank=True)
+    paypal_email = models.EmailField(max_length=255, blank=False, default="2")
 
+    
     def __str__(self):
         return self.user.get_full_name()
 
 
 class Courier(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    lat = models.FloatField(default=0)
-    lng = models.FloatField(default=0)
     paypal_email = models.EmailField(max_length=255, blank=True)
     fcm_token = models.TextField(blank=True)
 
@@ -123,7 +115,6 @@ class Transaction(models.Model):
         (IN_STATUS, 'In'),
         (OUT_STATUS, 'Out')
     )
-    transaction_id = models.CharField(max_length=100, default=None)
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     amount = models.FloatField(default=0)
     status = models.CharField(max_length=20, choices=STATUSES, default=IN_STATUS)
@@ -133,4 +124,4 @@ class Transaction(models.Model):
     order_id = models.CharField(max_length=100, default="")
 
     def __str__(self):
-        return self.order_id
+        return self.job.name

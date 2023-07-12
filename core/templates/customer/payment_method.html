@@ -5,58 +5,79 @@
 
 <div class="card bg-white mt-2 mb-5" style="max-width: 350px; margin-left: auto; margin-right: auto;">
   <b class="text-secondary">Transact Payment</b><br />
-  <div id="paypal-button-container"></div>
+  {% if job.status == 'completed' %}
+    <div class="media">
+        <div class="media-body">
+            <div class="row">
+                <div class="col-lg-9">
+                    <h5 class="mb-1">{{ job.name }}</h5>
+                    <div class="d-flex mb-4">
+                        <b>from:</b>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="ml-2">
+                            <small>{{ job.pickup_address }}</small><br />
+                            <div class="d-flex align-items-center">
+                                <h6 class="mr-2 mb-0">sender:</h6>
+                                <b>{{ job.pickup_name }}</b>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex">
+                        <b>to: </b>
+                        <i class="fas fa-flag-checkered"></i>
+                        <div class="ml-2">
+                            <small>{{ job.delivery_address }}</small>
+                            <div class="d-flex align-items-center">
+                                <h6 class="mr-2 mb-0">recipient:</h6>  <!-- Corrected typo: 'recepient' to 'recipient' -->
+                                <b>{{ job.delivery_name }}</b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 text-right d-flex flex-column justify-content-between">
+                    <div><span class="badge badge-warning mb-2">{{ job.get_status_display }}</span></div>
+                    <h2 class="mb-1">${{ job.price }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="paypal-button-container"></div>  <!-- This line is correct and will display a PayPal button -->
+  {% else %}
+    <b class="text-black">No Jobs currently completed!</b>
+  {% endif %}
 </div>
 
 <script src="https://www.paypal.com/sdk/js?client-id=AViXy3AqztngAJ-O7ggs8DYMgvXwSvGWYCyVnPcdBt6L821iWKKlrLPZdLBDe1UyrAAlgeW_mvKZMTIB&currency=USD"></script>
 
 <script>
       paypal.Buttons({
-        // Order is created on the server and the order id is returned
-        createOrder() {
-          return fetch("/my-server/create-paypal-order", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            // use the "body" param to optionally pass additional order information
-            // like product skus and quantities
-            body: JSON.stringify({
-              cart: [
-                {
-                  sku: "YOUR_PRODUCT_STOCK_KEEPING_UNIT",
-                  quantity: "YOUR_PRODUCT_QUANTITY",
-                },
-              ],
-            }),
-          })
-          .then((response) => response.json())
-          .then((order) => order.id);
+
+        // Set up transaction when payment button is clicked
+        createOrder: function(data, actions) {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                value: '0.01'// can reference variable or functione.g, 'value: document.getElementById("amount").value'
+
+              }
+            }]
+          });
         },
-        // Finalize the transaction on the server after payer approval
-        onApprove(data) {
-          return fetch("/my-server/capture-paypal-order", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              orderID: data.orderID
-            })
-          })
-          .then((response) => response.json())
-          .then((orderData) => {
-            // Successful capture! For dev/demo purposes:
+
+        // Finalize the transaction after payer has approved the payment
+
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function(orderData) {
+            // Successfull capture! For dev/demo purposes only
             console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
-            const transaction = orderData.purchase_units[0].payments.captures[0];
-            alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
-            // When ready to go live, remove the alert and show a success message within this page. For example:
-            // const element = document.getElementById('paypal-button-container');
-            // element.innerHTML = '<h3>Thank you for your payment!</h3>';
-            // Or go to another URL:  window.location.href = 'thank_you.html';
+            var transaction = orderData.purchase_units[0].payments.captures[0];
+            // Show a success message to the buyer
+            alert('Transaction '+ transaction.status + ': ' + transaction.id + '\n\nSee console for all available details');
+
+            // Replace the above to show a success message within this page, e.g.
+
           });
         }
       }).render('#paypal-button-container');
-</script>
-  
+</script> 
 {% endblock main %}

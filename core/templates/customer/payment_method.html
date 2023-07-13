@@ -5,55 +5,14 @@
 
 <div class="card bg-white mt-2 mb-5" style="max-width: 350px; margin-left: auto; margin-right: auto;">
   <b class="text-secondary">Transact Payment</b><br />
-  {% for job in jobs %}
-  {% if job.status == 'completed' %}
-    <div class="media">
-        <div class="media-body">
-            <div class="row">
-                <div class="col-lg-9">
-                    <h5 class="mb-1">{{ job.name }}</h5>
-                    <div class="d-flex mb-4">
-                        <b>from:</b>
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div class="ml-2">
-                            <small>{{ job.pickup_address }}</small><br />
-                            <div class="d-flex align-items-center">
-                                <h6 class="mr-2 mb-0">sender:</h6>
-                                <b>{{ job.pickup_name }}</b>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex">
-                        <b>to: </b>
-                        <i class="fas fa-flag-checkered"></i>
-                        <div class="ml-2">
-                            <small>{{ job.delivery_address }}</small>
-                            <div class="d-flex align-items-center">
-                                <h6 class="mr-2 mb-0">recipient:</h6>  <!-- Corrected typo: 'recepient' to 'recipient' -->
-                                <b>{{ job.delivery_name }}</b>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 text-right d-flex flex-column justify-content-between">
-                    <div><span class="badge badge-warning mb-2">{{ job.get_status_display }}</span></div>
-                    <h2 class="mb-1">${{ job.price }}</h2>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="paypal-button-container"></div>  <!-- This line is correct and will display a PayPal button -->
-  {% else %}
-    <b class="text-black">No Jobs currently completed!</b>
-  {% endif %}
-  {% endfor %}
+  <div id="paypal-button-container"></div>  <!-- This line is correct and will display a PayPal button -->
 </div>
 
 <script src="https://www.paypal.com/sdk/js?client-id=AViXy3AqztngAJ-O7ggs8DYMgvXwSvGWYCyVnPcdBt6L821iWKKlrLPZdLBDe1UyrAAlgeW_mvKZMTIB&currency=USD"></script>
 
 <script>
 
-  function getCookie(name) {
+  {% comment %} function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
         const cookies = document.cookie.split(';');
@@ -68,15 +27,14 @@
     }
     return cookieValue;
   }
-  const csrftoken = getCookie('csrftoken');
+  const csrftoken = getCookie('csrftoken'); {% endcomment %}
 
   var total = '{{ job.price }}'
-  var job_id = '{{ job.id }}'
+  {% comment %} var job_id = '{{ job.id }}'
 
   function completeOrder(){
-    var url = "{% url  %}"
 
-    ftech(url, {
+    fetch(url, {
       method: 'POST',
       headers: {
         'content-type': 'application/json'
@@ -84,7 +42,7 @@
       },
       body: JSON.stringify({})
     })
-  }
+  } {% endcomment %}
 
   paypal.Buttons({
 

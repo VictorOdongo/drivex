@@ -75,22 +75,12 @@ def payment_method_page(request):
         status=Job.COMPLETED_STATUS
     )
 
-    total_price = round(sum(job.price for job in jobs) * 0.8, 2)
-    total_jobs = len(jobs)
-    total_km = sum(job.distance for job in jobs)
-
-    # job = Job.objects.all(id=pk)
-    # context = {'job': job}
     if jobs:
         messages.success(request, "Job completed, pay now") 
     else:
         messages.warning(request, "You have no completed jobs")
        
-    return render(request, 'customer/payment_method.html', {
-        "total_price": total_price,
-        "total_jobs": total_jobs,
-        "total_km": total_km,  
-    })
+    return render(request, 'customer/payment_method.html')
 
 
 # Job creation

@@ -45,8 +45,9 @@ urlpatterns = [
     path('sign-up/', views.sign_up),
     path('customer/', include((customer_urlpatterns, 'customer'))),
     path('courier/', include((courier_urlpatterns, 'courier'))),
-    path('firebase-messaging-sw.js', (TemplateView.as_view(
-        template_name="firebase-messaging-sw.js", content_type="application/javascript",))),
+    path('payment/success/', customer_views.payment_success, name='payment_success'),
+    path('payment/cancel/', customer_views.payment_cancel, name='payment_cancel'),
+    path('firebase-messaging-sw.js', (TemplateView.as_view(template_name="firebase-messaging-sw.js", content_type="application/javascript",))),
 ]
 
 websocket_urlpatterns = [

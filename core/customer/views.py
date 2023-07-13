@@ -8,6 +8,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.http import HttpResponse
 from django.contrib import messages
 
 from django.contrib.auth import update_session_auth_hash
@@ -70,18 +71,86 @@ def profile_page(request):
 # Payment processing
 @login_required(login_url="/sign-in/?next=/customer/")
 def payment_method_page(request):
-    jobs = Job.objects.filter(
-        courier=request.user.courier,
-        status=Job.COMPLETED_STATUS
-    )
+    current_customer = request.user.customer
 
-    if jobs:
+    has_current_job = Job.objects.filter(
+        customer=current_customer,
+        status__in=[
+            Job.COMPLETED_STATUS,
+        ]
+    ).exists()
+
+    if has_current_job:
         messages.success(request, "Job completed, pay now") 
+        
+        # Fetch the completed job related to the current customer
+        current_job = Job.objects.filter(
+            customer=current_customer,
+            status=Job.COMPLETED_STATUS
+        ).first()
+
+        if current_job:
+            current_courier = current_job.courier
+
+            if current_courier and current_courier.paypal_email:
+                courier_paypal_email = current_courier.paypal_email
+
+                # Initialize PayPal SDK
+                paypalrestsdk.configure({
+                    "mode": settings.PAYPAL_MODE,  
+                    "client_id": settings.PAYPAL_CLIENT_ID,
+                    "client_secret": settings.PAYPAL_SECRET_KEY
+                })
+
+                # Create PayPal payment object
+                payment = paypalrestsdk.Payment({
+                    "intent": "sale",
+                    "payer": {
+                        "payment_method": "paypal"
+                    },
+                    "transactions": [{
+                        "amount": {
+                            "total": "10.00",  # Set the transaction amount here
+                            "currency": "USD"  # Set the currency code here
+                        },
+                        "payee": {
+                            "email": courier_paypal_email
+                        },
+                        "description": "Payment for job"
+                    }],
+                    "redirect_urls": {
+                        "return_url": request.build_absolute_uri('/payment/success/'), 
+                        "cancel_url": request.build_absolute_uri('/payment/cancel/')
+                    }
+                })
+
+                # Perform API call to create PayPal payment
+                if payment.create():
+                    # Redirect user to PayPal approval URL
+                    redirect_url = next(link.href for link in payment.links if link.method == 'REDIRECT')
+                    return redirect(redirect_url)
+                else:
+                    messages.error(request, "Failed to create PayPal payment")
+            else:
+                messages.error(request, "Courier email not found")
+        else:
+            messages.error(request, "No completed job found for payment")
     else:
-        messages.warning(request, "You have no completed jobs")
+        messages.warning(request, "You have no completed jobs")          
        
     return render(request, 'customer/payment_method.html')
 
+
+@login_required(login_url="/sign-in/?next=/customer/")
+def payment_success(request):
+    # Handle successful payment
+    return HttpResponse("Payment successful!")
+
+
+@login_required(login_url="/sign-in/?next=/customer/")
+def payment_cancel(request):
+    # Handle payment cancellation
+    return HttpResponse("Payment canceled!")
 
 # Job creation
 @login_required(login_url="/sign-in/?next=/customer/")

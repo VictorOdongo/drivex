@@ -11,39 +11,9 @@
 <script src="https://www.paypal.com/sdk/js?client-id=AViXy3AqztngAJ-O7ggs8DYMgvXwSvGWYCyVnPcdBt6L821iWKKlrLPZdLBDe1UyrAAlgeW_mvKZMTIB&currency=USD"></script>
 
 <script>
-
-  {% comment %} function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-  }
-  const csrftoken = getCookie('csrftoken'); {% endcomment %}
-
-  var total = '{{ job.price }}'
-  {% comment %} var job_id = '{{ job.id }}'
-
-  function completeOrder(){
-
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-        'X-CSRFToken': csrftoken
-      },
-      body: JSON.stringify({})
-    })
-  } {% endcomment %}
-
+  var total = '{{ customer.job.price }}'
+  var courierPaypalEmail = '{{ courier.paypal_email }}'; // Update with the appropriate variable name from your context
+  
   paypal.Buttons({
 
     // Set up transaction when payment button is clicked
@@ -52,6 +22,9 @@
         purchase_units: [{
           amount: {
             value: total // can reference variable or functione.g, 'value: document.getElementById("amount").value'
+          },
+          payee: {
+            email_address: courierPaypalEmail
           }
         }]
       });
@@ -65,6 +38,7 @@
         console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
         var transaction = orderData.purchase_units[0].payments.captures[0];
         // Show a success message to the buyer
+        alert('Transaction completed by'  + details.payer.name.given_name + '!');
         alert('Transaction '+ transaction.status + ': ' + transaction.id + '\n\nSee console for all available details');
 
         // Replace the above to show a success message within this page, e.g.

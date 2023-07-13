@@ -188,11 +188,11 @@ PAYPAL_SECRET_KEY = 'ENT8ig3CW2x2eZAZcNa3t9JKbrzss9LuBAs2QoqeSHuRO4AZ-w21cCzQ4v4
 
 # PayPal SDK settings
 
-PAYPAL_SDK_CONFIG = {
-    "mode": PAYPAL_MODE,
-    "client_id": PAYPAL_CLIENT_ID,
-    "client_secret": PAYPAL_SECRET_KEY,
-}
+# PAYPAL_SDK_CONFIG = {
+#     "mode": PAYPAL_MODE,
+#     "client_id": PAYPAL_CLIENT_ID,
+#     "client_secret": PAYPAL_SECRET_KEY,
+# }
 
 # Django PayPal settings
 

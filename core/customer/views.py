@@ -160,7 +160,6 @@ def create_job_page(request):
                 creating_job.save()
                 
             return redirect(reverse('customer:home'))
-
                 
                 # try:
                 #     payment_intent = stripe.PaymentIntent.create(

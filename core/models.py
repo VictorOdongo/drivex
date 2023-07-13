@@ -124,4 +124,4 @@ class Transaction(models.Model):
     order_id = models.CharField(max_length=100, default="")
 
     def __str__(self):
-        return self.job.name
+        return self.job.id

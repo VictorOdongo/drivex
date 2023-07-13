@@ -144,21 +144,27 @@ def create_job_page(request):
                         'rows'][0]['elements'][0]['duration']['value']
                     creating_job.distance = round(distance / 1000, 2)
                     creating_job.duration = int(duration / 60)
-                    creating_job.price = creating_job.distance * 1  # $1 per Km
+                    creating_job.price = creating_job.distance * 0.25  # $ 0.25 per Km
                     creating_job.save()
 
                 except Exception as e:
                     print(e)
-                    messages.error(
-                        request, "Unfortunately, we do not support deliveries at this distance.")
+                    messages.error(request, "Unfortunately, we do not support deliveries at this distance.")
 
                 return redirect(reverse('customer:create_job'))
 
         elif request.POST.get('step') == '4':
             if creating_job.price:
-                try:
+                
+                creating_job.status = Job.PROCESSING_STATUS
+                creating_job.save()
+                
+            return redirect(reverse('customer:home'))
+
+                
+                # try:
                 #     payment_intent = stripe.PaymentIntent.create(
-                #         amount=int(creating_job.price * 100),
+                #         amount=int(creating_job.price * 0.25),
                 #         currency='usd',
                 #         customer=current_customer.stripe_customer_id,
                 #         payment_method=current_customer.stripe_payment_method_id,
@@ -172,8 +178,8 @@ def create_job_page(request):
                 #         amount=creating_job.price
                 #     )
 
-                    creating_job.status = Job.PROCESSING_STATUS
-                    creating_job.save()
+                    # creating_job.status = Job.PROCESSING_STATUS
+                    # creating_job.save()
 
                 #     # Send push notifications to all couriers
                 #     couriers = Courier.objects.all()
@@ -200,12 +206,12 @@ def create_job_page(request):
                 #     print('{0} messages were sent successfully'.format(
                 #         response.success_count))
 
-                    return redirect(reverse('customer:home'))
+                    # return redirect(reverse('customer:home'))
 
-                except stripe.error.CardError as e:
-                    err = e.error
+                # except stripe.error.CardError as e:
+                    # err = e.error
                     # Error code will be authentication_required if authentication is needed
-                    print("Code is: %s" % err.code)
+                    # print("Code is: %s" % err.code)
                     # payment_intent_id = err.payment_intent['id']
                     # payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
 

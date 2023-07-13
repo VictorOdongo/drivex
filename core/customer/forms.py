@@ -22,8 +22,7 @@ class BasicCustomerForm(forms.ModelForm):
 class JobCreateStep1Form(forms.ModelForm):
     class Meta:
         model = Job
-        fields = ('name', 'description', 'category',
-                  'size', 'quantity', 'photo')
+        fields = ('name', 'description', 'category', 'size', 'quantity', 'photo')
 
 
 class JobCreateStep2Form(forms.ModelForm):
@@ -34,8 +33,7 @@ class JobCreateStep2Form(forms.ModelForm):
 
     class Meta:
         model = Job
-        fields = ('pickup_address', 'pickup_lat',
-                  'pickup_lng', 'pickup_name', 'pickup_phone')
+        fields = ('pickup_address', 'pickup_lat', 'pickup_lng', 'pickup_name', 'pickup_phone')
 
 
 class JobCreateStep3Form(forms.ModelForm):

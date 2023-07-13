@@ -27,6 +27,6 @@ def sign_up(request):
             form.save(user)  # Save the form to the Customer model
 
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            return redirect('/sign-in')  # Redirect to the signin page
+            return redirect('/')  # Redirect to the user home page
 
     return render(request, 'sign_up.html', {'form': form})

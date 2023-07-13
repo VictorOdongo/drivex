@@ -47,6 +47,12 @@
           </p>
           <h4>{{ job.delivery_name }}</h4>
           <span>{{ job.delivery_address }}</span><br />
+          <hr>
+          <p class="text-secondary">
+            <small><b>JOB PRICE</b></small>
+          </p>
+          <span>$ {{ job.price }}</span><br />
+
           {% endif %} {% endif %}
         </div>
       </div>
@@ -153,9 +159,9 @@
             <div class="card bg-white mt-2 mb-5">
               <div class="card-body">
                 <div class="row">
-                  <div class="col-lg-8">
-                    {% csrf_token %} {% bootstrap_form step2_form
-                    exclude='pickup_lat, pickup_lng' %}
+                  <div class="col-lg-7">
+                    {% csrf_token %}
+                     {% bootstrap_form step2_form exclude='pickup_lat, pickup_lng' %}
                     <input
                       hidden
                       id="pickup_lat"
@@ -167,15 +173,15 @@
                       id="pickup_lng"
                       name="pickup_lng"
                       value="{{ job.pickup_lng }}"
-                    />
+                    /> 
                   </div>
-                  <div class="col-lg-4">
+                  <div class="col-lg-5">
                     <div id="pickup-map"></div>
                     <div id="pickup-infowindow-content">
                       <span id="pickup-place-name" class="title"></span><br />
                       <span id="pickup-place-address"></span>
                     </div>
-                  </div>
+                  </div> 
                 </div>
               </div>
             </div>
@@ -204,9 +210,9 @@
             <div class="card bg-white mt-2 mb-5">
               <div class="card-body">
                 <div class="row">
-                  <div class="col-lg-8">
-                    {% csrf_token %} {% bootstrap_form step3_form
-                    exclude='delivery_lat, delivery_lng' %}
+                  <div class="col-lg-7">
+                    {% csrf_token %}
+                    {% bootstrap_form step3_form exclude='delivery_lat, delivery_lng' %}
                     <input
                       hidden
                       id="delivery_lat"
@@ -220,7 +226,7 @@
                       value="{{ job.delivery_lng }}"
                     />
                   </div>
-                  <div class="col-lg-4">
+                  <div class="col-lg-5">
                     <div id="delivery-map"></div>
                     <div id="delivery-infowindow-content">
                       <span id="delivery-place-name" class="title"></span><br />
@@ -253,11 +259,12 @@
           <form method="POST">
             <div class="card bg-white mt-2 mb-5">
               <div class="card-body">
+                {% csrf_token %}
                 <div class="form-group">
                   <label>Price</label>
                   <input
                     class="form-control"
-                    value="${{ job.price }}"
+                    value="$ {{ job.price }}"
                     disabled
                   />
                 </div>
@@ -353,8 +360,7 @@
       marker.setPosition(place.geometry.location);
       marker.setVisible(true);
       infowindowContent.children[type + "-place-name"].textContent = place.name;
-      infowindowContent.children[type + "-place-address"].textContent =
-        place.formatted_address;
+      infowindowContent.children[type + "-place-address"].textContent = place.formatted_address;
       infowindow.open(map, marker);
 
       $("#" + type + "_lat").val(place.geometry.location.lat());
@@ -371,9 +377,6 @@
 
 {% endblock content %} {% block scripts %}
 
-<script async
-  src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_API_KEY }}&callback=initMap&libraries=places&v=weekly"
-  defer
-></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_API_KEY }}&callback=initMap&libraries=places&v=weekly" defer></script>
 
 {% endblock %}

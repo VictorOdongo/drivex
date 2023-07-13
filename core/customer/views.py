@@ -159,7 +159,7 @@ def create_job_page(request):
                 creating_job.status = Job.PROCESSING_STATUS
                 creating_job.save()
                 
-            return redirect(reverse('customer:home'))
+            return redirect(reverse('customer:current_jobs'))
                 
                 # try:
                 #     payment_intent = stripe.PaymentIntent.create(

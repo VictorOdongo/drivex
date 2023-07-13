@@ -53,12 +53,12 @@
       <a class="navbar-brand" href="/" style="color: white"
         ><h2>DriveXpress!</h2></a
       >
-      {% comment %} <form class="form-inline">
+      <form class="form-inline">
         <span class="mr-4" style="color: white"
-          >{{ request.user.get_full_name | title }}</span
+          > welcome {{ request.user.get_full_name | title }}!</span
         >
         <a href="/sign-out" class="btn btn-outline-info">Sign Out</a>
-      </form> {% endcomment %}
+      </form>
     </nav>
     
     {% comment %} body content {% endcomment %}

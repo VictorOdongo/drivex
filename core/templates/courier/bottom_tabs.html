@@ -38,7 +38,7 @@
 {% url 'courier:archived_jobs' as archived_jobs_url %}
 {% url 'courier:profile' as profile_url %}
 
-<div class="bottom-tabs d-flex">
+<div class="bottom-tabs d-flex bg-dark">
     <a href="{% url 'courier:available_jobs' %}" class="{% if request.path == available_jobs_url %} active {% endif %}">
         <i class="fas fa-map-marked-alt"></i>
         <span>Available Jobs</span>

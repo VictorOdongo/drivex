@@ -21,7 +21,7 @@
 <body>
   <!-- navigation -->
   <nav class="navbar {% if not request.user.is_authenticated %} navbar-expand-lg {% endif %} navbar-light bg-dark">
-    <a class="navbar-brand" href="/"><h2 style="color: white;">DriveXpress</h2></a>
+    <a class="navbar-brand" href="/"><h2 style="color: white !important;">DriveXpress</h2></a>
 
     {% if not request.user.is_authenticated %}
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -50,7 +50,20 @@
   {% block content %}{% endblock content %}
 
   <!-- footer -->
-  <footer class="text-center mt-5 mb-5">&copy; Drivex.com</footer>
+  <footer class="text-center bg-dark text-white" style="height: 56px; padding: 10px; color: white; position: fixed; bottom: 0; width: 100%;">&copy; Drivex.com
+    <style>
+      @media (prefers-color-scheme: dark) {
+        footer {
+          color: white;
+        }
+      }
+      @media (prefers-color-scheme: light) {
+        footer {
+          color: black;
+        }
+      }
+    </style>
+  </footer>
   {% block footercontent %}{% endblock footercontent %}
 
   <!-- scripts -->

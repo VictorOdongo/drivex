@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Courier | drivex</title>
+    <title>Courier-drivex</title>
 
     {% load bootstrap4 %}
     {% bootstrap_css %}
@@ -13,6 +13,10 @@
     {% comment %} {% include 'load_firebase.html' %} {% endcomment %}
 
     <link rel="stylesheet" href="https://unpkg.com/bootoast@1.0.1/dist/bootoast.min.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     {% comment %} <script>
         const messaging = firebase.messaging()
@@ -51,7 +55,7 @@
       class="navbar {% if not request.user.is_authenticated %} navbar-expand-lg {% endif %} navbar-light bg-dark"
     >
       <a class="navbar-brand" href="/" style="color: white"
-        ><h2>DriveXpress!</h2></a
+        ><h2>DriveXpress</h2></a
       >
       <form class="form-inline">
         <span class="mr-4" style="color: white"

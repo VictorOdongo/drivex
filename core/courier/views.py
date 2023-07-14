@@ -32,7 +32,7 @@ def available_job_page(request, id):
         job.status = Job.PICKING_STATUS
         job.save()
 
-        return redirect(reverse('courier:available_jobs'))
+        return redirect(reverse('courier:current_job'))
 
     return render(request, 'courier/available_job.html', {
         "job": job

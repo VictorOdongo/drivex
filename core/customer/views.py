@@ -84,57 +84,57 @@ def payment_method_page(request):
         messages.success(request, "Job completed, pay now") 
         
         # Fetch the completed job related to the current customer
-        current_job = Job.objects.filter(
-            customer=current_customer,
-            status=Job.COMPLETED_STATUS
-        ).first()
+        # current_job = Job.objects.filter(
+        #     customer=current_customer,
+        #     status=Job.COMPLETED_STATUS
+        # ).first()
 
-        if current_job:
-            current_courier = current_job.courier
+        # if current_job:
+        #     current_courier = current_job.courier
 
-            if current_courier and current_courier.paypal_email:
-                courier_paypal_email = current_courier.paypal_email
+        #     if current_courier and current_courier.paypal_email:
+        #         courier_paypal_email = current_courier.paypal_email
 
-                # Initialize PayPal SDK
-                paypalrestsdk.configure({
-                    "mode": settings.PAYPAL_MODE,  
-                    "client_id": settings.PAYPAL_CLIENT_ID,
-                    "client_secret": settings.PAYPAL_SECRET_KEY
-                })
+        #         # Initialize PayPal SDK
+        #         paypalrestsdk.configure({
+        #             "mode": settings.PAYPAL_MODE,  
+        #             "client_id": settings.PAYPAL_CLIENT_ID,
+        #             "client_secret": settings.PAYPAL_SECRET_KEY
+        #         })
 
-                # Create PayPal payment object
-                payment = paypalrestsdk.Payment({
-                    "intent": "sale",
-                    "payer": {
-                        "payment_method": "paypal"
-                    },
-                    "transactions": [{
-                        "amount": {
-                            "total": "10.00",  # Set the transaction amount here
-                            "currency": "USD"  # Set the currency code here
-                        },
-                        "payee": {
-                            "email": courier_paypal_email
-                        },
-                        "description": "Payment for job"
-                    }],
-                    "redirect_urls": {
-                        "return_url": request.build_absolute_uri('/payment/success/'), 
-                        "cancel_url": request.build_absolute_uri('/payment/cancel/')
-                    }
-                })
+        #         # Create PayPal payment object
+        #         payment = paypalrestsdk.Payment({
+        #             "intent": "sale",
+        #             "payer": {
+        #                 "payment_method": "paypal"
+        #             },
+        #             "transactions": [{
+        #                 "amount": {
+        #                     "total": "10.00",  # Set the transaction amount here
+        #                     "currency": "USD"  # Set the currency code here
+        #                 },
+        #                 "payee": {
+        #                     "email": courier_paypal_email
+        #                 },
+        #                 "description": "Payment for job"
+        #             }],
+        #             "redirect_urls": {
+        #                 "return_url": request.build_absolute_uri('/payment/success/'), 
+        #                 "cancel_url": request.build_absolute_uri('/payment/cancel/')
+        #             }
+        #         })
 
-                # Perform API call to create PayPal payment
-                if payment.create():
-                    # Redirect user to PayPal approval URL
-                    redirect_url = next(link.href for link in payment.links if link.method == 'REDIRECT')
-                    return redirect(redirect_url)
-                else:
-                    messages.error(request, "Failed to create PayPal payment")
-            else:
-                messages.error(request, "Courier email not found")
-        else:
-            messages.error(request, "No completed job found for payment")
+        #         # Perform API call to create PayPal payment
+        #         if payment.create():
+        #             # Redirect user to PayPal approval URL
+        #             redirect_url = next(link.href for link in payment.links if link.method == 'REDIRECT')
+        #             return redirect(redirect_url)
+        #         else:
+        #             messages.error(request, "Failed to create PayPal payment")
+        #     else:
+        #         messages.error(request, "Courier email not found")
+        # else:
+        #     messages.error(request, "No completed job found for payment")
     else:
         messages.warning(request, "You have no completed jobs")          
        

@@ -115,7 +115,7 @@ class Transaction(models.Model):
         (IN_STATUS, 'In'),
         (OUT_STATUS, 'Out')
     )
-    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    job = models.OneToOneField(Job, on_delete=models.CASCADE)
     amount = models.FloatField(default=0)
     status = models.CharField(max_length=20, choices=STATUSES, default=IN_STATUS)
     timestamp = models.DateTimeField(default=timezone.now)

@@ -200,20 +200,18 @@ def create_job_page(request):
                 creating_job = step3_form.save()
 
                 try:
-                    r = requests.get("https://maps.googleapis.com/maps/api/distancematrix/json?origins={}&destinations={}&mode=transit&key={}".format(
+                    r = requests.get("https://maps.googleapis.com/maps/api/distancematrix/json?origins={}&destinations={}&mode=driving&key={}".format(
                         creating_job.pickup_address,
                         creating_job.delivery_address,
                         settings.GOOGLE_API_KEY
                     ))
                     print(r.json()['rows'])
 
-                    distance = r.json()[
-                        'rows'][0]['elements'][0]['distance']['value']
-                    duration = r.json()[
-                        'rows'][0]['elements'][0]['duration']['value']
+                    distance = r.json()['rows'][0]['elements'][0]['distance']['value']
+                    duration = r.json()['rows'][0]['elements'][0]['duration']['value']
                     creating_job.distance = round(distance / 1000, 2)
                     creating_job.duration = int(duration / 60)
-                    creating_job.price = creating_job.distance * 0.25  # $ 0.25 per Km
+                    creating_job.price = round(creating_job.distance * 0.25, 2)  # $ 0.25 per Km
                     creating_job.save()
 
                 except Exception as e:

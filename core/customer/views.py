@@ -172,6 +172,12 @@ class DownloadPDF(View):
             # Get the current customer
             customer = request.user.customer
             
+             # Access the associated user model
+            user = customer.user
+            
+            # Capture the current customer's full name from the associated user model
+            full_name = user.get_full_name()  # Retrieve the customer's full name
+            
             # Filter the jobs for the current customer with status "completed"
             jobs = Job.objects.filter(customer=customer, status='completed')
             
@@ -180,12 +186,14 @@ class DownloadPDF(View):
         
                              
             data = {
-                "company": "DriveXpress Delivery",
+                "company": "DriveXpress",
                 "contact": "+2541107800",
                 "website": "www.drivex.com",
                 "email": "info@drive.com",
                 "jobs": jobs,
                 "job_price": total_price,  # Add the total job price to the data dictionary
+                "customer_name": full_name,  # Add the customer's full name to the data dictionary
+
             }
             
             pdf = render_to_pdf('customer/pdf_template.html', data)

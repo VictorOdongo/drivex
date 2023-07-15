@@ -1,8 +1,13 @@
 import paypalrestsdk
 import requests
-import stripe
+# import stripe
 # import firebase_admin
 # from firebase_admin import credentials, auth, messaging
+
+from io import BytesIO
+from django.template.loader import get_template
+from django.views import View
+from xhtml2pdf import pisa
 
 from django.conf import settings
 from django.shortcuts import render, redirect
@@ -142,15 +147,36 @@ def payment_method_page(request):
 
 
 @login_required(login_url="/sign-in/?next=/customer/")
-def payment_success(request):
-    # Handle successful payment
-    return HttpResponse("Payment successful!")
+def render_to_pdf(template_src, context_dict={}):
+	template = get_template(template_src)
+	html  = template.render(context_dict)
+	result = BytesIO()
+	pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+	if not pdf.err:
+		return HttpResponse(result.getvalue(), content_type='application/pdf')
+	return None
 
 
-@login_required(login_url="/sign-in/?next=/customer/")
-def payment_cancel(request):
-    # Handle payment cancellation
-    return HttpResponse("Payment canceled!")
+data = {
+	"company": "DriveXpress Delivery LTD",
+	"contact": "+2541107800",
+	"website": "drivex.com",
+	"email": "info@drive.com",
+	}
+
+#Automaticly downloads to PDF file
+class DownloadPDF(View):
+	def get(self, request, *args, **kwargs):
+		
+		pdf = render_to_pdf('customer/pdf_template.html', data)
+
+		response = HttpResponse(pdf, content_type='application/pdf')
+		filename = "Invoice_%s.pdf" %("12341231")
+		content = "attachment; filename='%s'" %(filename)
+		response['Content-Disposition'] = content
+		return response
+
+
 
 # Job creation
 @login_required(login_url="/sign-in/?next=/customer/")

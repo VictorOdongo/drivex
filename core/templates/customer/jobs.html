@@ -65,6 +65,9 @@
     </a>
     {% endfor %}
 
+    <hr>
+    <a class="btn btn-info"  href="{% url 'customer:pdf_template' %}" style="width: 200px;">Get Job summary PDF</a>
+
     {% else %}
     <div class="card">
         <div class="card-body text-center">

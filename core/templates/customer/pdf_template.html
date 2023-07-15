@@ -1,0 +1,81 @@
+{% extends 'base.html' %} {% load bootstrap4 %} 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<head>
+<style>
+    @page {
+        size: a4 portrait;
+        @frame header_frame {           /* Static Frame */
+            -pdf-frame-content: header_content;
+            left: 50pt; width: 512pt; top: 50pt; height: 40pt;
+        }
+        @frame content_frame {          /* Content Frame */
+            left: 50pt; width: 512pt; top: 90pt; height: 632pt;
+        }
+        @frame footer_frame {           /* Another static Frame */
+            -pdf-frame-content: footer_content;
+            left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+        }
+    }
+</style>
+</head>
+
+<body>
+    <!-- Content for Static Frame 'header_frame' -->
+    <div id="header_content">
+    	<h3>DriveXpress</h3>
+    </div>
+
+    <!-- Content for Static Frame 'footer_frame' -->
+    <div id="footer_content">(c) - page <pdf:pagenumber>
+        of <pdf:pagecount>
+    </div>
+
+    <!-- HTML Content -->
+    <table>
+    		<tr>
+    			<td>{{contact}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{city}}</td>
+    			<td>{{email}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{website}}</td>
+    		</tr>
+    </table>
+
+    <hr>
+
+    <table>
+    	<tr>
+ 
+    		<th>Job name</th>
+    		<th>Quantity</th>
+    		<th>Size</th>
+    		<th>Pickup name</th>
+            <th>Pickup address</th>
+    		<th>Delivery name</th>
+    		<th>Delivery address</th>
+    		<th>Job Price(USD$)</th>
+
+    	</tr>
+        <tr>
+     		<td>{{ job.name }}</td>
+    		<td>{{ job.quantity }}</td>
+    		<td>{{ job.get_size_display }}</td>
+    		<td>{{ job.pickup_name }}</td>
+            <td>{{ job.pickup_address }}</td>
+    		<td>{{ job.delivery_name }}</td>
+    		<td>{{ job.delivery_address }}</td>
+    		<td>{{ job.price }}</td>
+
+    	</tr>
+    	
+    </table>
+
+    <hr>
+
+    <p><strong>Total: {{ job.get_total_price }}</strong></p>
+</body>
+</html>

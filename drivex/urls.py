@@ -17,7 +17,8 @@ customer_urlpatterns = [
     path('create_job/', customer_views.create_job_page, name='create_job'),
     path('jobs/current/', customer_views.current_jobs_page, name='current_jobs'),
     path('jobs/archived/', customer_views.archived_jobs_page, name='archived_jobs'),
-    path('jobs/<job_id>/', customer_views.job_page, name='job')
+    path('jobs/<job_id>/', customer_views.job_page, name='job'),
+    path('pdf_download/', customer_views.DownloadPDF.as_view(), name='pdf_template'),
 ]
 
 courier_urlpatterns = [
@@ -45,8 +46,6 @@ urlpatterns = [
     path('sign-up/', views.sign_up),
     path('customer/', include((customer_urlpatterns, 'customer'))),
     path('courier/', include((courier_urlpatterns, 'courier'))),
-    path('payment/success/', customer_views.payment_success, name='payment_success'),
-    path('payment/cancel/', customer_views.payment_cancel, name='payment_cancel'),
     path('firebase-messaging-sw.js', (TemplateView.as_view(template_name="firebase-messaging-sw.js", content_type="application/javascript",))),
 ]
 

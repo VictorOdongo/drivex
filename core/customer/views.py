@@ -16,6 +16,11 @@ from django.http import HttpResponse
 from django.contrib import messages
 from drivex.utils import render_to_pdf
 from django.db.models import Sum
+from django.template import Context
+from core.models import Job
+from django.shortcuts import get_object_or_404
+
+
 
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
@@ -162,12 +167,20 @@ def payment_method_page(request):
 #Automaticly downloads to PDF file
 class DownloadPDF(View):
 	def get(self, request, *args, **kwargs):
-            jobs = Job.objects.all()
+            # jobs = Job.objects.all()
             
-            total_price = jobs.aggregate(total=Sum('price'))['total']  # Calculate the total job price
-                 
+            # Get the current customer
+            customer = request.user.customer
+            
+            # Filter the jobs for the current customer with status "completed"
+            jobs = Job.objects.filter(customer=customer, status='completed')
+            
+            # Calculate the total job price using the Sum aggregation function
+            total_price = jobs.aggregate(total_price=Sum('price'))['total_price']
+        
+                             
             data = {
-                "company": "DriveXpress LTD",
+                "company": "DriveXpress Delivery",
                 "contact": "+2541107800",
                 "website": "www.drivex.com",
                 "email": "info@drive.com",

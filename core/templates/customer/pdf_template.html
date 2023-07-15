@@ -6,7 +6,7 @@
         size: a4 portrait;
         @frame header_frame {           /* Static Frame */
             -pdf-frame-content: header_content;
-            left: 50pt; width: 512pt; top: 50pt; height: 40pt;
+            left: 50pt; width: 512pt; top: 50pt; height: 20pt;
         }
         @frame content_frame {          /* Content Frame */
             left: 50pt; width: 512pt; top: 90pt; height: 632pt;
@@ -34,22 +34,20 @@
     	<h1>{{company}}</h1>
     </div>
 
-    <!-- Content for Static Frame 'footer_frame' -->
-    <div id="footer_content">(c) - page <pdf:pagenumber>
-        of <pdf:pagecount>
-    </div>
-
     <!-- HTML Content -->
     <table>
-    		<tr>
-    			<td>{{contact}}</td>
-    		</tr>
-    		<tr>
-    			<td>{{email}}</td>
-    		</tr>
-    		<tr>
-    			<td>{{website}}</td>
-    		</tr>
+        <tr>
+            <td><b>INVOICE</b></td>
+        </tr>
+        <tr>
+            <td>{{contact}}</td>
+        </tr>
+        <tr>
+            <td>{{email}}</td>
+        </tr>
+        <tr>
+            <td>{{website}}</td>
+        </tr>
     </table>
     <hr>
     <table>
@@ -83,5 +81,12 @@
     <div style="display: flex; justify-content: space-between;">
         <p style="font-size: 12px; margin-bottom: 0;"><strong>Total Job(s) Price:</strong></p>
         <p style="font-size: 12px; text-align: right; margin-bottom: 0;"><strong>$ {{ job_price }}</strong></p>
-    </div></body>
+    </div>
+
+    <!-- Content for Static Frame 'footer_frame' -->
+    <div id="footer_content">(c) - page <pdf:pagenumber>
+        of <pdf:pagecount>
+    </div>
+
+</body>
 </html>

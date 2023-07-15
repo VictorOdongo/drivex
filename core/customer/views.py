@@ -18,6 +18,7 @@ from drivex.utils import render_to_pdf
 from django.db.models import Sum
 from django.template import Context
 from core.models import Job
+import uuid
 from django.shortcuts import get_object_or_404
 
 
@@ -183,6 +184,10 @@ class DownloadPDF(View):
             
             # Calculate the total job price using the Sum aggregation function
             total_price = jobs.aggregate(total_price=Sum('price'))['total_price']
+            
+            # Generate a unique invoice number using UUID
+            invoice_number = str(uuid.uuid4())[:8]  # Generate a random UUID and truncate to 8 characters
+        
         
                              
             data = {
@@ -193,6 +198,7 @@ class DownloadPDF(View):
                 "jobs": jobs,
                 "job_price": total_price,  # Add the total job price to the data dictionary
                 "customer_name": full_name,  # Add the customer's full name to the data dictionary
+                "invoice_number": invoice_number,  # Add the invoice number to the data dictionary
 
             }
             

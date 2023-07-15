@@ -1,6 +1,5 @@
-{% extends 'base.html' %} {% load bootstrap4 %} 
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML>
+<html>
 <head>
 <style>
     @page {
@@ -17,13 +16,22 @@
             left: 50pt; width: 512pt; top: 772pt; height: 20pt;
         }
     }
+    th {
+        font-size: 10px;  /* Adjust the font size as desired */
+        border-bottom: 1px solid black;  /* Add a bottom border to table headers */
+        padding-left: 8px;  /* Adjust the left padding as desired */
+    }
+
+    p strong {
+        font-size: 12px;  /* Adjust the font size as desired */
+    }
 </style>
 </head>
 
 <body>
     <!-- Content for Static Frame 'header_frame' -->
     <div id="header_content">
-    	<h3>DriveXpress</h3>
+    	<h1>{{company}}</h1>
     </div>
 
     <!-- Content for Static Frame 'footer_frame' -->
@@ -37,22 +45,18 @@
     			<td>{{contact}}</td>
     		</tr>
     		<tr>
-    			<td>{{city}}</td>
     			<td>{{email}}</td>
     		</tr>
     		<tr>
     			<td>{{website}}</td>
     		</tr>
     </table>
-
     <hr>
-
     <table>
     	<tr>
- 
     		<th>Job name</th>
     		<th>Quantity</th>
-    		<th>Size</th>
+            <th>Size</th>
     		<th>Pickup name</th>
             <th>Pickup address</th>
     		<th>Delivery name</th>
@@ -60,6 +64,7 @@
     		<th>Job Price(USD$)</th>
 
     	</tr>
+        {% for job in jobs %}
         <tr>
      		<td>{{ job.name }}</td>
     		<td>{{ job.quantity }}</td>
@@ -69,13 +74,14 @@
     		<td>{{ job.delivery_name }}</td>
     		<td>{{ job.delivery_address }}</td>
     		<td>{{ job.price }}</td>
-
     	</tr>
+        {% endfor %}
     	
     </table>
 
     <hr>
-
-    <p><strong>Total: {{ job.get_total_price }}</strong></p>
-</body>
+    <div style="display: flex; justify-content: space-between;">
+        <p style="font-size: 12px; margin-bottom: 0;"><strong>Total Job(s) Price:</strong></p>
+        <p style="font-size: 12px; text-align: right; margin-bottom: 0;"><strong>$ {{ job_price }}</strong></p>
+    </div></body>
 </html>

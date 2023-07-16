@@ -186,9 +186,7 @@ class DownloadPDF(View):
             total_price = jobs.aggregate(total_price=Sum('price'))['total_price']
             
             # Generate a unique invoice number using UUID
-            invoice_number = str(uuid.uuid4())[:8]  # Generate a random UUID and truncate to 8 characters
-        
-        
+            invoice_number = str(uuid.uuid4())[:8]  # Generate a random UUID and truncate to 8 characters    
                              
             data = {
                 "company": "DriveXpress",

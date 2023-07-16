@@ -115,9 +115,7 @@ def profile_page(request):
     })
 
 class DownloadPDF2(View):
-	def get(self, request, *args, **kwargs):
-            # jobs = Job.objects.all()
-            
+	def get(self, request, *args, **kwargs):            
             # Get the current customer
             courier = request.user.courier
             
@@ -134,9 +132,7 @@ class DownloadPDF2(View):
             total_price = jobs.aggregate(total_price=Sum('price'))['total_price']
             
             # Generate a unique report number using UUID
-            report_number = str(uuid.uuid4())[:8]  # Generate a random UUID and truncate to 8 characters
-        
-        
+            report_number = str(uuid.uuid4())[:8]  # Generate a random UUID and truncate to 8 characters        
                              
             data = {
                 "company": "DriveXpress",
@@ -164,7 +160,6 @@ class DownloadPDF2(View):
             return HttpResponse("Not found")
 
 
-
 @login_required(login_url="/sign-in/?next=/courier/")
 def payout_method_page(request):
     payout_form = forms.PayoutForm(instance=request.user.courier)
@@ -175,7 +170,7 @@ def payout_method_page(request):
         if payout_form.is_valid():
             payout_form.save()
 
-            messages.success(request, "Payout address is updated.")
+            messages.success(request, "Payout details updated.")
             return redirect(reverse('courier:profile'))
 
     return render(request, 'courier/payout_method.html', {

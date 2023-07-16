@@ -29,7 +29,7 @@ class JobCreateStep2Form(forms.ModelForm):
     pickup_address = forms.CharField(required=True)
     pickup_name = forms.CharField(required=True)
     phone_regex = re.compile(r'^[0-9]+$')  # Regular expression for numbers only
-    pickup_phone = forms.CharField(required=True, max_length=25, validators=[RegexValidator(phone_regex, 'Please enter a valid phone number.')])
+    pickup_phone = forms.CharField(required=True, max_length=10, validators=[RegexValidator(phone_regex, 'Please enter a valid phone number.')])
 
     class Meta:
         model = Job
@@ -40,7 +40,7 @@ class JobCreateStep3Form(forms.ModelForm):
     delivery_address = forms.CharField(required=True)
     delivery_name = forms.CharField(required=True)
     phone_regex = re.compile(r'^[0-9]+$')  # Regular expression for numbers only
-    delivery_phone = forms.CharField(required=True, max_length=25, validators=[RegexValidator(phone_regex, 'Please enter a valid phone number.')])
+    delivery_phone = forms.CharField(required=True, max_length=10, validators=[RegexValidator(phone_regex, 'Please enter a valid phone number.')])
 
     class Meta:
         model = Job

@@ -68,7 +68,7 @@ payout_to_courier.short_description = "Payout to Couriers"
 
 
 class CourierAdmin(admin.ModelAdmin):
-    list_display = ['user_full_name', 'paypal_email', 'balance']
+    list_display = ['user_full_name', 'phone_number', 'balance']
     actions = [payout_to_courier]
 
     def user_full_name(self, obj):
@@ -79,7 +79,7 @@ class CourierAdmin(admin.ModelAdmin):
 
 
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ['courier_paypal_email', 'customer', 'courier', 'job', 'amount', 'status', 'timestamp']
+    list_display = ['courier_phone_number', 'customer', 'courier', 'job', 'amount', 'status', 'timestamp']
     list_filter = ['status', ]
 
     def customer(self, obj):
@@ -88,8 +88,8 @@ class TransactionAdmin(admin.ModelAdmin):
     def courier(self, obj):
         return obj.job.courier
 
-    def courier_paypal_email(self, obj):
-        return obj.job.courier.paypal_email if obj.job.courier else None
+    def courier_phone_number(self, obj):
+        return obj.job.courier.phone_number if obj.job.courier else None
 
 
 # Register your models here.

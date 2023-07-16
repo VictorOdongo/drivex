@@ -1,17 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import RegexValidator
+from django.utils.translation import gettext_lazy as _
 # import paypalrestsdk
-from django.conf import settings
 
 import uuid
 from django.utils import timezone
 from datetime import datetime
-
-
-import re
-
-
+import uuid
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -26,7 +21,7 @@ class Courier(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     lat = models.FloatField(default=0)
     lng = models.FloatField(default=0)
-    paypal_email = models.EmailField(max_length=255, blank=True)
+    phone_number = models.CharField(max_length=10, blank=True)
     fcm_token = models.TextField(blank=True)
 
     def __str__(self):
@@ -106,8 +101,6 @@ class Job(models.Model):
 
     def __str__(self):
         return self.name
-
-
 class Transaction(models.Model):
     IN_STATUS = "in"
     OUT_STATUS = "out"

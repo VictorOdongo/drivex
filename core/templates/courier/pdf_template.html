@@ -36,7 +36,7 @@
             <td><b><h1 style="color: #17a2b8; font-size: 16px;">{{company}}</h1><b></td>
         </tr>
         <tr>
-            <td><b><h1>Invoice</h1></b></td>
+            <td><b><h1>Job(s) Report: {{ report_number }}</h1></b></td>
         </tr>
         <tr>
             <td>{{contact}}</td>
@@ -48,30 +48,25 @@
             <td>{{website}}</td>
         </tr>
     </table><br/>
-    <h2>Customer: <b>{{ customer_name | title }}</b></h2>
-    <h2>Invoice Number: {{ invoice_number }}</h2>
+    <h2>Courier: <b>{{ courier_name | title }}</b></h2>
 
     <hr>
     <table>
     	<tr>
     		<th>Job name</th>
-    		<th>Quantity</th>
-            <th>Size</th>
-    		<th>Pickup name</th>
+    		<th>Distance</th>
+            <th>Duration(mins)</th>
             <th>Pickup address</th>
-    		<th>Delivery name</th>
     		<th>Delivery address</th>
-    		<th>Job Price(USD$)</th>
+    		<th>Job Price(US$)</th>
 
     	</tr>
         {% for job in jobs %}
         <tr>
      		<td>{{ job.name }}</td>
-    		<td>{{ job.quantity }}</td>
-    		<td>{{ job.get_size_display }}</td>
-    		<td>{{ job.pickup_name }}</td>
+            <td>{{ job.distance }}</td>
+     		<td>{{ job.duration }}</td>
             <td>{{ job.pickup_address }}</td>
-    		<td>{{ job.delivery_name }}</td>
     		<td>{{ job.delivery_address }}</td>
     		<td>{{ job.price }}</td>
     	</tr>

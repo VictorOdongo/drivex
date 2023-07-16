@@ -7,6 +7,12 @@ from django.contrib import messages
 from core.courier import forms
 from core.models import *
 
+from django.http import HttpResponse
+from drivex.utils import render_to_pdf
+from django.db.models import Sum
+from core.models import Job
+from django.views.generic import View
+
 
 @login_required(login_url="/sign-in/?next=/courier/")
 def home(request):
@@ -107,6 +113,56 @@ def profile_page(request):
         "total_jobs": total_jobs,
         "total_km": total_km
     })
+
+class DownloadPDF2(View):
+	def get(self, request, *args, **kwargs):
+            # jobs = Job.objects.all()
+            
+            # Get the current customer
+            courier = request.user.courier
+            
+             # Access the associated user model
+            user = courier.user
+            
+            # Capture the current customer's full name from the associated user model
+            full_name = user.get_full_name()  # Retrieve the customer's full name
+            
+            # Filter the jobs for the current courier with status "completed"
+            jobs = Job.objects.filter(courier=courier, status='completed')
+            
+            # Calculate the total job price using the Sum aggregation function
+            total_price = jobs.aggregate(total_price=Sum('price'))['total_price']
+            
+            # Generate a unique report number using UUID
+            report_number = str(uuid.uuid4())[:8]  # Generate a random UUID and truncate to 8 characters
+        
+        
+                             
+            data = {
+                "company": "DriveXpress",
+                "contact": "+2541107800",
+                "website": "www.drivex.com",
+                "email": "info@drive.com",
+                "jobs": jobs,
+                "job_price": total_price,  # Add the total job price to the data dictionary
+                "courier_name": full_name,  # Add the customer's full name to the data dictionary
+                "report_number": report_number,  # Add the invoice number to the data dictionary
+
+            }
+            
+            pdf = render_to_pdf('courier/pdf_template.html', data)
+            
+            if pdf:
+                response = HttpResponse(pdf, content_type='application/pdf')
+                filename = "JobSummary_%s.pdf" %("12341231")
+                content = "attachment; filename='%s'" %(filename)
+                download = request.GET.get("download")
+                if download:
+                    content = "attachment; filename='%s'" %(filename)
+                response['Content-Disposition'] = content
+                return response
+            return HttpResponse("Not found")
+
 
 
 @login_required(login_url="/sign-in/?next=/courier/")

@@ -27,7 +27,7 @@
         <a href="{% url 'customer:create_job' %}" class="list-group-item list-group-item-action {% if request.path == create_job_url %} active btn-info {% endif %}">Create Job</a>
         <a href="{% url 'customer:current_jobs' %}" class="list-group-item list-group-item-action {% if request.path == current_jobs_url or request.path == archived_jobs_url %} active btn-info {% endif %}">Job History</a>
         <a href="{% url 'customer:profile' %}" class="list-group-item list-group-item-action {% if request.path == profile_url %} active btn-info {% endif %}">My Profile</a>
-        <a href="{% url 'customer:payment_method' %}" class="list-group-item list-group-item-action {% if request.path == payment_method_url %} active btn-info {% endif %}">Payout</a>
+        <a href="{% url 'customer:payment_method' %}" class="list-group-item list-group-item-action {% if request.path == payment_method_url %} active btn-info {% endif %}">Payment</a>
       </div>
     </div>
     <div class="col-lg-8">

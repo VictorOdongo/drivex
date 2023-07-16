@@ -39,10 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'social_django',
     'bootstrap4',
     'core.apps.CoreConfig',
-    'channels'
+    'channels',
+    'django_daraja',
 ]
 
 MIDDLEWARE = [
@@ -185,17 +185,7 @@ PAYPAL_MODE = "sandbox"
 PAYPAL_CLIENT_ID = 'AViXy3AqztngAJ-O7ggs8DYMgvXwSvGWYCyVnPcdBt6L821iWKKlrLPZdLBDe1UyrAAlgeW_mvKZMTIB'
 PAYPAL_SECRET_KEY = 'ENT8ig3CW2x2eZAZcNa3t9JKbrzss9LuBAs2QoqeSHuRO4AZ-w21cCzQ4v4Wy8npK0l9LQKgjWf4oKWF'
 
-
-# PayPal SDK settings
-
-# PAYPAL_SDK_CONFIG = {
-#     "mode": PAYPAL_MODE,
-#     "client_id": PAYPAL_CLIENT_ID,
-#     "client_secret": PAYPAL_SECRET_KEY,
-# }
-
 # Django PayPal settings
-
 DJANGO_PAYPAL_SETTINGS = {
     "mode": PAYPAL_MODE,
     "client_id": PAYPAL_CLIENT_ID,
@@ -203,7 +193,6 @@ DJANGO_PAYPAL_SETTINGS = {
 }
 
 # Add the Django PayPal settings to the main Django settings
-
 PAYPAL_SETTINGS = {
     "urls": {
         "sandbox": "https://www.sandbox.paypal.com/checkoutnow",
@@ -255,4 +244,12 @@ JAZZMIN_UI_TWEAKS = {
 
 # INTASEND_SECTRET_KEY = "ISSecretKey_live_0526687a-d69f-4321-88e5-1ad98eaffa10"
 # INTASEND_PUBKEY = "ISPubKey_live_9eae6ea6-c221-4ab3-8805-933aea7aca63"
+
+
+MPESA_ENVIRONMENT = 'sandbox'
+MPESA_CONSUMER_KEY = 'wAOoNCzV9NtVk1zzrIndp0o1TFQu0Deo'
+MPESA_CONSUMER_SECRET = 'EGzqD5wlqFym3qGz'
+MPESA_SHORTCODE = '174379'
+MPESA_EXPRESS_SHORTCODE = '174379'
+MPESA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
 

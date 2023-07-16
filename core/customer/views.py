@@ -4,10 +4,7 @@ import requests
 # import firebase_admin
 # from firebase_admin import credentials, auth, messaging
 
-from io import BytesIO
-from django.template.loader import get_template
 from django.views import View
-
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -16,11 +13,11 @@ from django.http import HttpResponse
 from django.contrib import messages
 from drivex.utils import render_to_pdf
 from django.db.models import Sum
-from django.template import Context
 from core.models import Job
 import uuid
-from django.shortcuts import get_object_or_404
 
+from django_daraja.mpesa.core import MpesaClient
+from django.views.decorators.csrf import csrf_exempt
 
 
 from django.contrib.auth import update_session_auth_hash
@@ -29,7 +26,6 @@ from django.contrib.auth.forms import PasswordChangeForm
 from core.customer import forms
 from core.models import *
 
-from django.http import JsonResponse
 # from intasend import APIService
 # import os
 
@@ -81,87 +77,48 @@ def profile_page(request):
     })
 
 # Payment processing
-@login_required(login_url="/sign-in/?next=/customer/")
-def payment_method_page(request):
-    current_customer = request.user.customer
+@csrf_exempt
+def payment_method(request):
+    # current_customer = request.user.customer
 
-    has_current_job = Job.objects.filter(
-        customer=current_customer,
-        status__in=[
-            Job.COMPLETED_STATUS,
-        ]
-    ).exists()
-
-    if has_current_job:
-        messages.success(request, "Job completed, pay now") 
+    # has_current_job = Job.objects.filter(
+    #     customer=current_customer,
+    #     status__in=[
+    #         Job.COMPLETED_STATUS,
+    #     ]
+    # ).exists()
+    
+    # if has_current_job:
+    #     messages.success(request, "Job completed, pay now") 
+    # else:
+    #     messages.warning(request, "You have no completed jobs")   
         
-        # Fetch the completed job related to the current customer
-        # current_job = Job.objects.filter(
-        #     customer=current_customer,
-        #     status=Job.COMPLETED_STATUS
-        # ).first()
+    cl = MpesaClient()
+    reference = "DriveXpress"
+    amount = 1
+    phone_number = "254797563890"
+    transaction_description = "Description"
+    callback_url = 'https://96be-105-161-30-98.ngrok-free.app/customer/payment_method/'
+    response = cl.stk_push(phone_number, amount,reference, transaction_description, callback_url)
 
-        # if current_job:
-        #     current_courier = current_job.courier
+    if request.method == 'POST':
+        result = cl.parse_stk_result(request.body)
+        if result["ResultCode"] == 0:
+            amount = result["Amount"]
+            receipt_number = result["MpesaReceiptNumber"]
+            transaction_date = result["TransactionDate"]
+            phone_number = result["PhoneNumber"]
 
-        #     if current_courier and current_courier.paypal_email:
-        #         courier_paypal_email = current_courier.paypal_email
-
-        #         # Initialize PayPal SDK
-        #         paypalrestsdk.configure({
-        #             "mode": settings.PAYPAL_MODE,  
-        #             "client_id": settings.PAYPAL_CLIENT_ID,
-        #             "client_secret": settings.PAYPAL_SECRET_KEY
-        #         })
-
-        #         # Create PayPal payment object
-        #         payment = paypalrestsdk.Payment({
-        #             "intent": "sale",
-        #             "payer": {
-        #                 "payment_method": "paypal"
-        #             },
-        #             "transactions": [{
-        #                 "amount": {
-        #                     "total": "10.00",  # Set the transaction amount here
-        #                     "currency": "USD"  # Set the currency code here
-        #                 },
-        #                 "payee": {
-        #                     "email": courier_paypal_email
-        #                 },
-        #                 "description": "Payment for job"
-        #             }],
-        #             "redirect_urls": {
-        #                 "return_url": request.build_absolute_uri('/payment/success/'), 
-        #                 "cancel_url": request.build_absolute_uri('/payment/cancel/')
-        #             }
-        #         })
-
-        #         # Perform API call to create PayPal payment
-        #         if payment.create():
-        #             # Redirect user to PayPal approval URL
-        #             redirect_url = next(link.href for link in payment.links if link.method == 'REDIRECT')
-        #             return redirect(redirect_url)
-        #         else:
-        #             messages.error(request, "Failed to create PayPal payment")
-        #     else:
-        #         messages.error(request, "Courier email not found")
-        # else:
-        #     messages.error(request, "No completed job found for payment")
-    else:
-        messages.warning(request, "You have no completed jobs")          
-       
-    return render(request, 'customer/payment_method.html')
+    return HttpResponse(response)
+         
+               
 
 
-# @login_required(login_url="/sign-in/?next=/customer/")
-# def render_to_pdf(template_src, context_dict={}):
-# 	template = get_template(template_src)
-# 	html  = template.render(context_dict)
-# 	result = BytesIO()
-# 	pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
-# 	if not pdf.err:
-# 		return HttpResponse(result.getvalue(), content_type='application/pdf')
-# 	return None
+# make payment request   
+@login_required(login_url="/sign-in/?next=/customer/") 
+def payment(request):
+    return render(request, 'customer/payment.html')
+
 
 
 
@@ -290,60 +247,6 @@ def create_job_page(request):
                 creating_job.save()
                 
             return redirect(reverse('customer:current_jobs'))
-                
-                # try:
-                #     payment_intent = stripe.PaymentIntent.create(
-                #         amount=int(creating_job.price * 0.25),
-                #         currency='usd',
-                #         customer=current_customer.stripe_customer_id,
-                #         payment_method=current_customer.stripe_payment_method_id,
-                #         off_session=True,
-                #         confirm=True,
-                #     )
-
-                #     Transaction.objects.create(
-                #         stripe_payment_intent_id=payment_intent['id'],
-                #         job=creating_job,
-                #         amount=creating_job.price
-                #     )
-
-                    # creating_job.status = Job.PROCESSING_STATUS
-                    # creating_job.save()
-
-                #     # Send push notifications to all couriers
-                #     couriers = Courier.objects.all()
-                #     registration_tokens = [
-                #         i.fcm_token for i in couriers if i.fcm_token]
-
-                #     message = messaging.MulticastMessage(
-                #         notification=messaging.Notification(
-                #             title=creating_job.name,
-                #             body=creating_job.description
-                #         ),
-                #         webpush=messaging.WebpushConfig(
-                #             notification=messaging.WebpushNotification(
-                #                 icon=creating_job.photo.url,
-                #             ),
-                #             fcm_options=messaging.WebpushFCMOptions(
-                #                 link=settings.NGROK_URL +
-                #                 reverse('courier:available_jobs')
-                #             )
-                #         ),
-                #         tokens=registration_tokens
-                #     )
-                #     response = messaging.send_multicast(message)
-                #     print('{0} messages were sent successfully'.format(
-                #         response.success_count))
-
-                    # return redirect(reverse('customer:home'))
-
-                # except stripe.error.CardError as e:
-                    # err = e.error
-                    # Error code will be authentication_required if authentication is needed
-                    # print("Code is: %s" % err.code)
-                    # payment_intent_id = err.payment_intent['id']
-                    # payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
-
     # Determine the current step
     if not creating_job:
         current_step = 1

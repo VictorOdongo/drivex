@@ -1,0 +1,11 @@
+{% extends 'customer/base.html' %}
+{% load bootstrap4 %}
+{% block main %}
+
+
+<div class="card bg-white mt-2 mb-5" style="max-width: 350px; margin-left: auto; margin-right: auto;">
+  <b class="text-secondary">Transact Payment</b><br />
+  <a href="{% url 'customer:payment_method' %}" class="btn btn-success" style="width: 120px;">Payment</a>
+</div>
+
+{% endblock main %}

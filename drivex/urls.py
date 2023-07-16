@@ -13,7 +13,8 @@ from core.courier import views as courier_views, apis as courier_apis
 customer_urlpatterns = [
     path('', customer_views.home, name='home'),
     path('profile/', customer_views.profile_page, name='profile'),
-    path('payment_method/', customer_views.payment_method_page, name='payment_method'),
+    path('payment/', customer_views.payment, name='payment'),
+    path('payment_method/', customer_views.payment_method, name='payment_method'),
     path('create_job/', customer_views.create_job_page, name='create_job'),
     path('jobs/current/', customer_views.current_jobs_page, name='current_jobs'),
     path('jobs/archived/', customer_views.archived_jobs_page, name='archived_jobs'),

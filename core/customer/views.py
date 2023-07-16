@@ -14,6 +14,9 @@ from django.contrib import messages
 from drivex.utils import render_to_pdf
 from django.db.models import Sum
 from core.models import Job
+from core.models import Transaction
+from django.utils import timezone
+
 import uuid
 
 from django_daraja.mpesa.core import MpesaClient
@@ -79,25 +82,25 @@ def profile_page(request):
 # Payment processing
 @csrf_exempt
 def payment_method(request):
-    # current_customer = request.user.customer
+    current_customer = request.user.customer
 
-    # has_current_job = Job.objects.filter(
-    #     customer=current_customer,
-    #     status__in=[
-    #         Job.COMPLETED_STATUS,
-    #     ]
-    # ).exists()
+    has_current_job = Job.objects.filter(
+        customer=current_customer,
+        status__in=[
+            Job.COMPLETED_STATUS,
+        ]
+    ).exists()
     
-    # if has_current_job:
-    #     messages.success(request, "Job completed, pay now") 
-    # else:
-    #     messages.warning(request, "You have no completed jobs")   
+    if has_current_job:
+        messages.success(request, "Job completed, pay now") 
+    else:
+        messages.warning(request, "You have no completed jobs")   
         
     cl = MpesaClient()
     reference = "DriveXpress"
     amount = 1
     phone_number = "254797563890"
-    transaction_description = "Description"
+    transaction_description = "Delivery Payment Description"
     callback_url = 'https://96be-105-161-30-98.ngrok-free.app/customer/payment_method/'
     response = cl.stk_push(phone_number, amount,reference, transaction_description, callback_url)
 
@@ -106,8 +109,24 @@ def payment_method(request):
         if result["ResultCode"] == 0:
             amount = result["Amount"]
             receipt_number = result["MpesaReceiptNumber"]
-            transaction_date = result["TransactionDate"]
+            transaction_date_str = result["TransactionDate"]
+            # Convert the transaction_date_str to a timezone-aware datetime object
+            transaction_date = timezone.datetime.strptime(transaction_date_str, "%Y%m%d%H%M%S")
+            iso_date = transaction_date.isoformat()
+
             phone_number = result["PhoneNumber"]
+            
+            # Create a new Transaction object and save it to the database
+            transaction = Transaction.objects.create(
+                job=current_customer.current_job,  # Assuming you have a reference to the current job
+                amount=amount,
+                status=Transaction.OUT_STATUS,
+                customer=current_customer,
+                order_id=receipt_number,
+                timestamp=iso_date,  # Assign the transaction_date to the timestamp field
+
+            )
+            transaction.save()
 
     return HttpResponse(response)
          

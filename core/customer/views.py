@@ -86,25 +86,36 @@ def payment_method(request):
 
     has_current_job = Job.objects.filter(
         customer=current_customer,
-        status__in=[
-            Job.COMPLETED_STATUS,
-        ]
+        status=Job.COMPLETED_STATUS,
     ).exists()
-    
+
     if has_current_job:
-        messages.success(request, "Job completed, pay now") 
+        messages.success(request, "Job completed, pay now")
+        return prompt_payment(request)
     else:
-        messages.warning(request, "You have no completed jobs")   
-        
+        messages.warning(request, "You have no completed jobs")
+        return HttpResponse(status=403)  # Return Forbidden response if no completed jobs
+
+@csrf_exempt    
+def prompt_payment(request):
     cl = MpesaClient()
     reference = "DriveXpress"
     amount = 1
     phone_number = "254797563890"
     transaction_description = "Delivery Payment Description"
-    callback_url = 'https://96be-105-161-30-98.ngrok-free.app/customer/payment_method/'
-    response = cl.stk_push(phone_number, amount,reference, transaction_description, callback_url)
+    callback_url = 'https://bb3e-41-89-10-241.ngrok-free.app/customer/payment_method/'
+    response = cl.stk_push(phone_number, amount, reference, transaction_description, callback_url)
 
+    return HttpResponse(response)
+
+
+
+@csrf_exempt
+def payment_result(request):
     if request.method == 'POST':
+        current_customer = request.user.customer
+        cl = MpesaClient()
+        
         result = cl.parse_stk_result(request.body)
         if result["ResultCode"] == 0:
             amount = result["Amount"]
@@ -114,8 +125,6 @@ def payment_method(request):
             transaction_date = timezone.datetime.strptime(transaction_date_str, "%Y%m%d%H%M%S")
             iso_date = transaction_date.isoformat()
 
-            phone_number = result["PhoneNumber"]
-            
             # Create a new Transaction object and save it to the database
             transaction = Transaction.objects.create(
                 job=current_customer.current_job,  # Assuming you have a reference to the current job
@@ -124,11 +133,10 @@ def payment_method(request):
                 customer=current_customer,
                 order_id=receipt_number,
                 timestamp=iso_date,  # Assign the transaction_date to the timestamp field
-
             )
             transaction.save()
 
-    return HttpResponse(response)
+    return HttpResponse()
          
                
 

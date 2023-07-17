@@ -204,7 +204,7 @@ class DownloadPDF(View):
 def create_job_page(request):
     current_customer = request.user.customer
 
-    # if not current_customer.stripe_payment_method_id:
+    # if not current_customer.phone_number:
     #     return redirect(reverse('customer:payment_method'))
 
     has_current_job = Job.objects.filter(

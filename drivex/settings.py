@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bootstrap4',
     'core.apps.CoreConfig',
-    'channels',
+    # 'channels',
     'django_daraja',
 ]
 

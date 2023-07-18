@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delivery Job</title>
+
+  {% load bootstrap4 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript jquery='full' %}
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css" />
+  <link rel="stylesheet" href="https://unpkg.com/bootoast@1.0.1/dist/bootoast.min.css" />
+  <script src="https://www.paypal.com/sdk/js?client-id=AViXy3AqztngAJ-O7ggs8DYMgvXwSvGWYCyVnPcdBt6L821iWKKlrLPZdLBDe1UyrAAlgeW_mvKZMTIB&currency=USD"></script>
+
+  {% block head %}{% endblock head %}
+</head>
+
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+  <!-- navigation -->
+  <nav class="navbar {% if not request.user.is_authenticated %} navbar-expand-lg {% endif %} navbar-light bg-dark">
+    <a class="navbar-brand" href="/"><h2 style="color: white !important;">DriveXpress</h2></a>
+
+    {% if not request.user.is_authenticated %}
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav">
+        <li class="nav-item {% if request.GET.next != '/courier/' %} active {% endif %}">
+          <a class="nav-link active" style="color: white !important;" aria-current="page" href="/sign-in/?next=/customer/">Customer</a>
+        </li>
+        <li class="nav-item {% if request.GET.next == '/courier/' %} active {% endif %}">
+          <a class="nav-link active" style="color: white !important;" aria-current="page" href="/sign-in/?next=/courier/">Courier</a>
+        </li>
+      </ul>
+      <div class="ml-auto">
+        <a href="/admin/" class="nav-link active ml-auto" style="color: white !important;" aria-current="page">Admin</a> <!-- Add the "Go to Admin" button -->
+      </div>
+    </div>
+    {% else %}
+    <form class="form-inline">
+      <span class="mr-4" style="color: white !important;">welcome {{ request.user.get_full_name | title }}!</span>
+      <a href="/sign-out" class="btn btn-outline-info">Sign Out</a>
+    </form>
+    {% endif %}
+  </nav>
+
+  <!-- body content -->
+  {% block content %}{% endblock content %}
+
+  <!-- footer -->
+  {% comment %} <footer class="text-center bg-dark text-white mt-5" style="height: 56px; padding: 10px; color: white; position: absolute; width: 100%;">&copy; Drivex.com
+    <style>
+      @media (prefers-color-scheme: dark) {
+        footer {
+          color: white;
+        }
+      }
+      @media (prefers-color-scheme: light) {
+        footer {
+          color: black;
+        }
+      }
+    </style>
+  </footer> {% endcomment %}
+
+  <!-- scripts -->
+  {% block scripts %}{% endblock scripts %}
+  <script src="https://unpkg.com/bootoast@1.0.1/dist/bootoast.min.js"></script>
+  <script>
+    function toast(message, type) {
+      bootoast.toast({
+        position: 'leftBottom',
+        message,
+        type
+      })
+    }
+  </script>
+  {% if messages %}
+  {% for message in messages %}
+  <script>
+    toast('{{ message }}', '{{ message.tags }}')
+  </script>
+  {% endfor %}
+  {% endif %}
+</body>
+
+</html>

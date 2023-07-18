@@ -109,7 +109,6 @@ def prompt_payment(request):
     return HttpResponse(response)
 
 
-
 @csrf_exempt
 def payment_result(request):
     if request.method == 'POST':

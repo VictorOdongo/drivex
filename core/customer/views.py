@@ -103,7 +103,7 @@ def prompt_payment(request):
     amount = 1
     phone_number = "254797563890"
     transaction_description = "Delivery Payment Description"
-    callback_url = 'https://bb3e-41-89-10-241.ngrok-free.app/customer/payment_method/'
+    callback_url = ' https://d678-41-89-10-241.ngrok-free.app/customer/payment_method/'
     response = cl.stk_push(phone_number, amount, reference, transaction_description, callback_url)
 
     return HttpResponse(response)
